@@ -15,8 +15,8 @@ export const siteConfig = {
   // E-mail institucional de contato (fácil de trocar)
   contact: {
     email: "comercial@vitrinelocal.com.br",
-    label: "Canal Institucional & Comercial",
-    helpText: "Para dúvidas institucionais, parcerias e contato direto com nossa equipe.",
+    label: "Fale com a Vitrine Local",
+    helpText: "Para dúvidas institucionais e contato direto com nossa equipe.",
   },
 
   hero: {
@@ -36,9 +36,8 @@ export const siteConfig = {
     sectionTag: "Sobre Nós",
     title: "Aproximando quem faz a comunidade acontecer",
     paragraphs: [
-      "A Vitrine Local é uma iniciativa dedicada a dar visibilidade aos negócios locais e criar conexões autênticas entre pessoas, empresas e prestadores de serviços.",
-      "Acreditamos que os estabelecimentos e os profissionais de cada bairro e região são o verdadeiro coração de uma economia dinâmica e humana. Ao proporcionar um espaço institucional claro e confiável, valorizamos quem empreende e facilitamos o acesso de quem busca soluções próximas do seu dia a dia.",
-      "Nosso compromisso é fortalecer essa rede de convivência, promovendo a integração entre a comunidade e aqueles que constroem a história local.",
+      "A Vitrine Local é uma iniciativa dedicada a dar visibilidade aos negócios locais e criar conexões entre pessoas, empresas e prestadores de serviços.",
+      "Nosso propósito é valorizar quem empreende em cada comunidade, aproximando as pessoas das empresas e dos profissionais que fazem parte do seu dia a dia.",
     ],
   },
 

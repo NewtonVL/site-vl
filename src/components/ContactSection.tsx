@@ -17,16 +17,16 @@ export const ContactSection: React.FC = () => {
   };
 
   return (
-    <section id="contato" className="py-20 sm:py-28 bg-white border-t border-zinc-200/60">
+    <section id="contato" className="py-16 sm:py-24 bg-white border-t border-zinc-200/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Fechamento Institucional */}
-        <div className="max-w-4xl mx-auto text-center mb-16 sm:mb-20">
-          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-brand-50 border border-brand-100 mb-6">
+        <div className="max-w-4xl mx-auto text-center mb-14 sm:mb-16">
+          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-brand-50 border border-brand-100 mb-5">
             <span className="w-2.5 h-2.5 rounded-full bg-brand" />
           </div>
 
-          <blockquote className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-900 tracking-tight leading-tight mb-4">
+          <blockquote className="text-2xl sm:text-4xl lg:text-4xl font-extrabold text-zinc-900 tracking-tight leading-tight mb-3">
             “{siteConfig.closing.quote}”
           </blockquote>
           
@@ -37,17 +37,17 @@ export const ContactSection: React.FC = () => {
 
         {/* Seção de Contato Institucional */}
         <div className="max-w-2xl mx-auto">
-          <div className="relative bg-zinc-50 border border-zinc-200 rounded-3xl p-8 sm:p-12 shadow-card text-center">
+          <div className="relative bg-zinc-50 border border-zinc-200 rounded-3xl p-7 sm:p-10 shadow-card text-center">
             
-            <div className="w-14 h-14 rounded-2xl bg-brand/10 border border-brand/20 text-brand flex items-center justify-center mx-auto mb-6">
-              <Mail className="w-7 h-7" />
+            <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/20 text-brand flex items-center justify-center mx-auto mb-5">
+              <Mail className="w-6 h-6" />
             </div>
 
             <h3 className="text-xl sm:text-2xl font-bold text-zinc-900 mb-2">
               {siteConfig.contact.label}
             </h3>
 
-            <p className="text-sm sm:text-base text-zinc-600 mb-8 max-w-md mx-auto">
+            <p className="text-sm sm:text-base text-zinc-600 mb-7 max-w-md mx-auto">
               {siteConfig.contact.helpText}
             </p>
 
@@ -108,10 +108,6 @@ export const ContactSection: React.FC = () => {
                 Endereço copiado para a área de transferência!
               </p>
             )}
-
-            <p className="mt-6 text-xs text-zinc-400">
-              Atendimento em horário comercial de segunda a sexta-feira.
-            </p>
           </div>
         </div>
 
