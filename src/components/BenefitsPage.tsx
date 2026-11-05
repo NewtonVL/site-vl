@@ -10,7 +10,7 @@ interface BenefitsPageProps {
 
 export const BenefitsPage: React.FC<BenefitsPageProps> = ({ onNavigateHome }) => {
   useEffect(() => {
-    document.title = "Benefícios Digitais | Vitrine Local & Rede Parcerias";
+    document.title = "Benefícios Exclusivos | Vitrine Local — Condições especiais para você";
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
 
@@ -133,7 +133,7 @@ export const BenefitsPage: React.FC<BenefitsPageProps> = ({ onNavigateHome }) =>
                     {benefitsConfig.rules.title}
                   </h3>
                   <p className="text-xs text-zinc-500">
-                    Diretrizes gerais para aplicação dos descontos de parceiros
+                    Diretrizes gerais para utilização dos benefícios exclusivos e condições especiais
                   </p>
                 </div>
               </div>
@@ -162,7 +162,7 @@ export const BenefitsPage: React.FC<BenefitsPageProps> = ({ onNavigateHome }) =>
                 className="h-9 sm:h-10 w-auto object-contain"
               />
               <span className="text-xs text-zinc-400 border-l border-zinc-800 pl-4">
-                Parceria Oficial {benefitsConfig.partner.name}
+                {benefitsConfig.partner.name} • {benefitsConfig.partner.tagline}
               </span>
             </div>
 

@@ -33,7 +33,7 @@ export function App() {
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
-  // Rota de Benefícios para Clubes Parceiros (Rede Parcerias)
+  // Rota de Benefícios Exclusivos (White Label)
   if (currentPath === '/beneficios') {
     return <BenefitsPage onNavigateHome={() => navigate('/')} />;
   }

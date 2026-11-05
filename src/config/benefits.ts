@@ -1,5 +1,5 @@
 /**
- * Configuração centralizada da página de benefícios para clubes parceiros (Rede Parcerias).
+ * Configuração centralizada da página de benefícios exclusivos (White Label).
  * Altere aqui textos, descontos, estados de botões e links de checkout sem tocar no código visual.
  */
 
@@ -26,15 +26,15 @@ export interface BenefitOffer {
 
 export const benefitsConfig = {
   partner: {
-    name: "REDE PARCERIAS",
-    tagline: "Parceria Exclusiva • Clubes de Benefícios",
+    name: "Benefícios Exclusivos",
+    tagline: "Condições especiais para você",
   },
 
   hero: {
-    tag: "Clubes Parceiros • Rede Parcerias",
+    tag: "Benefícios Exclusivos • Condições Especiais para Você",
     title: "Benefícios digitais para fortalecer seus projetos e negócios",
     subtitle:
-      "Usuários e associados dos clubes parceiros da Rede Parcerias contam com descontos exclusivos nas soluções digitais da Vitrine Local. Escolha a ferramenta ideal para dar visibilidade, profissionalismo e escala à sua atuação.",
+      "Aproveite benefícios exclusivos e condições especiais para você nas soluções digitais da Vitrine Local. Escolha a ferramenta ideal para dar visibilidade, profissionalismo e escala à sua atuação.",
     stepsTitle: "Como aproveitar o seu benefício",
     steps: [
       {
@@ -50,7 +50,7 @@ export const benefitsConfig = {
       {
         number: "03",
         title: "Aplique seu cupom",
-        description: "Insira no checkout o cupom informado pelo seu clube para liberar o desconto.",
+        description: "Aplique no checkout o cupom recebido no canal pelo qual você conheceu o benefício.",
       },
     ],
   },
@@ -125,11 +125,11 @@ export const benefitsConfig = {
   rules: {
     title: "Condições resumidas do benefício",
     items: [
-      "Benefício exclusivo para usuários e membros elegíveis dos clubes parceiros da Rede Parcerias.",
+      "Benefícios exclusivos com condições especiais para você nas soluções digitais selecionadas.",
       "O desconto percentual é aplicado sobre o preço público vigente no momento da contratação.",
       "Desconto não cumulativo com outras promoções, cupons ou campanhas vigentes.",
-      "Oferta sujeita às regras, termos e disponibilidade de cada solução e checkout parceiro.",
-      "Para validar o benefício, aplique o código de cupom informado pelo seu clube no campo correspondente antes de concluir o pagamento.",
+      "Oferta sujeita às regras, termos e disponibilidade de cada solução no momento da compra.",
+      "Aplique no checkout o cupom recebido no canal pelo qual você conheceu o benefício.",
     ],
   },
 };
