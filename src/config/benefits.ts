@@ -18,12 +18,18 @@ export interface BenefitAccent {
   badgeText: string;
 }
 
+export interface BenefitDetail {
+  label: string;
+  text: string;
+}
+
 export interface BenefitOffer {
   id: string;
   title: string;
   badge?: string;
   category: string;
   description: string;
+  details: BenefitDetail[];
   discount: string; // Ex: "30% OFF"
   coupon: string;
   couponNote?: string;
@@ -71,6 +77,16 @@ export const benefitsConfig = {
       title: "Método Bonequinhas Virais",
       category: "Conteúdo & Inteligência Artificial",
       description: "Criação de conteúdo estratégico e magnético com inteligência artificial para engajamento e vendas.",
+      details: [
+        {
+          label: "O que você recebe",
+          text: "Método para iniciantes, 100% pelo celular e com acesso vitalício, para criar personagem 3D com IA e dar voz e movimento em cenas de vídeo.",
+        },
+        {
+          label: "Indicado para",
+          text: "Quem quer produzir conteúdos para TikTok, Instagram, Reels e Shorts, ou divulgar produtos e marcas sem aparecer nem saber editar.",
+        },
+      ],
       discount: "30% OFF",
       coupon: "RPVL30",
       couponNote: "Confira o desconto no destino. Caso não apareça automaticamente, informe o código acima.",
@@ -90,6 +106,16 @@ export const benefitsConfig = {
       badge: "Plano anual",
       category: "Página Profissional de Links",
       description: "Página de alta performance para apresentar seus links, contatos e serviços de forma profissional e veloz.",
+      details: [
+        {
+          label: "O que você recebe",
+          text: "Página profissional no plano anual (12 meses) com links ilimitados, painel de edição, botão de WhatsApp destacado, domínio próprio e métricas em tempo real.",
+        },
+        {
+          label: "Indicado para",
+          text: "Empreendedores, prestadores de serviço, lojas locais, criadores e profissionais que querem reunir links, contatos e ofertas em um só lugar.",
+        },
+      ],
       discount: "30% OFF",
       coupon: "RPVL30",
       couponNote: "Confira o desconto no destino. Caso não apareça automaticamente, informe o código acima.",
@@ -108,6 +134,16 @@ export const benefitsConfig = {
       title: "Figurinhas para Instagram",
       category: "Design & Mídias Sociais",
       description: "Elementos gráficos exclusivos e dinâmicos para valorizar seus Stories e conteúdos diários.",
+      details: [
+        {
+          label: "O que você recebe",
+          text: "Biblioteca com mais de 30.000 figurinhas prontas por temas e estilos, com acesso imediato, vitalício e atualizações sem custo adicional.",
+        },
+        {
+          label: "Indicado para",
+          text: "Criadores, negócios e profissionais que produzem Stories no Instagram e querem conteúdos mais criativos sem criar tudo do zero.",
+        },
+      ],
       discount: "20% OFF",
       coupon: "RPVL20",
       couponNote: "Confira o desconto no destino. Caso não apareça automaticamente, informe o código acima.",
@@ -126,6 +162,16 @@ export const benefitsConfig = {
       title: "Pack Grid Boss",
       category: "Templates Estratégicos",
       description: "Templates modernos e estruturados para organizar o feed e posicionar sua marca com autoridade visual.",
+      details: [
+        {
+          label: "O que você recebe",
+          text: "Coleção digital de templates de Feed, Stories e carrosséis editáveis na versão gratuita do Canva, com acesso vitalício e atualizações.",
+        },
+        {
+          label: "Indicado para",
+          text: "Criadores e negócios que buscam manter padrão visual consistente e transformar o feed do Instagram em vitrine profissional.",
+        },
+      ],
       discount: "30% OFF",
       coupon: "RPVL30",
       couponNote: "Confira o desconto no destino. Caso não apareça automaticamente, informe o código acima.",
@@ -144,6 +190,16 @@ export const benefitsConfig = {
       title: "Bonequinhas Cristãs",
       category: "Fé & conteúdo",
       description: "Figurinhas PNG cristãs para criar Stories com fé e criatividade, com licença PLR para revenda.",
+      details: [
+        {
+          label: "O que você recebe",
+          text: "Mais de 3.000 figurinhas PNG para usar no Instagram, WhatsApp, Telegram e Canva, com acesso digital e licença PLR para revenda.",
+        },
+        {
+          label: "Indicado para",
+          text: "Mulheres cristãs, criadoras, líderes de ministérios e quem deseja compartilhar mensagens de fé ou revender conteúdos cristãos.",
+        },
+      ],
       discount: "26% OFF",
       coupon: "RPVL26",
       accent: {
@@ -161,6 +217,16 @@ export const benefitsConfig = {
       title: "VitrineLocal para Barbearias",
       category: "Presença Digital & Organização",
       description: "Solução completa para estruturar a presença online, organizar atendimentos e atrair clientes no seu bairro.",
+      details: [
+        {
+          label: "Modalidades previstas",
+          text: "Estão previstas as opções Autonomia e Implantação Completa, ainda em liberação (os detalhes de cada modalidade serão informados quando a oferta for ativada).",
+        },
+        {
+          label: "Indicado para",
+          text: "Barbearias que buscam estruturar a presença online, organizar atendimentos e atrair clientes no próprio bairro.",
+        },
+      ],
       discount: "20% OFF",
       coupon: "RPVL20",
       accent: {

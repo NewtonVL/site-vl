@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ExternalLink, Clock, Sparkles, Ticket, Copy, Check, AlertCircle } from 'lucide-react';
+import { ExternalLink, Clock, Sparkles, Ticket, Copy, Check, AlertCircle, ChevronDown } from 'lucide-react';
 import type { BenefitOffer } from '../config/benefits';
 import { BenefitBrandMark } from './BenefitBrandMark';
 
@@ -39,7 +39,9 @@ async function copyTextToClipboard(text: string): Promise<void> {
 
 export const BenefitCard: React.FC<BenefitCardProps> = ({ offer, className = '' }) => {
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle');
+  const [isExpanded, setIsExpanded] = useState(false);
   const resetTimerRef = useRef<number | null>(null);
+  const detailsId = `offer-details-${offer.id}`;
 
   useEffect(() => {
     return () => {
@@ -118,9 +120,43 @@ export const BenefitCard: React.FC<BenefitCardProps> = ({ offer, className = '' 
           </div>
 
           {/* Short Description */}
-          <p className="text-sm text-zinc-600 leading-relaxed mb-5">
+          <p className="text-sm text-zinc-600 leading-relaxed mb-2.5">
             {offer.description}
           </p>
+
+          {/* Expandable "Saiba mais" */}
+          {offer.details.length > 0 && (
+            <div className="mb-4">
+              <button
+                type="button"
+                onClick={() => setIsExpanded((prev) => !prev)}
+                aria-expanded={isExpanded}
+                aria-controls={detailsId}
+                aria-label={`${isExpanded ? 'Ocultar detalhes' : 'Saiba mais'} sobre ${offer.title}`}
+                className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-600 hover:text-zinc-900 py-1 rounded-md transition-colors touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1"
+              >
+                <span>{isExpanded ? 'Ver menos' : 'Saiba mais'}</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-150 ${isExpanded ? 'rotate-180' : ''}`}
+                  aria-hidden="true"
+                />
+              </button>
+
+              {isExpanded && (
+                <div
+                  id={detailsId}
+                  className="mt-2 p-3 rounded-xl bg-zinc-50/80 border border-zinc-200/70 space-y-2"
+                >
+                  {offer.details.map((detail) => (
+                    <p key={detail.label} className="text-xs text-zinc-600 leading-relaxed">
+                      <span className="font-semibold text-zinc-800">{detail.label}: </span>
+                      {detail.text}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div>
