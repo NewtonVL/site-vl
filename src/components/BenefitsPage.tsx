@@ -111,10 +111,14 @@ export const BenefitsPage: React.FC<BenefitsPageProps> = ({ onNavigateHome }) =>
               </p>
             </div>
 
-            {/* 5 Offers Grid */}
+            {/* Offers Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-              {benefitsConfig.offers.map((offer) => (
-                <BenefitCard key={offer.id} offer={offer} />
+              {benefitsConfig.offers.map((offer, idx) => (
+                <BenefitCard
+                  key={offer.id}
+                  offer={offer}
+                  className={idx >= 3 ? 'lg:self-start' : undefined}
+                />
               ))}
             </div>
           </div>
