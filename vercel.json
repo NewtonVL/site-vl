@@ -24,6 +24,15 @@
       ]
     },
     {
+      "source": "/sites(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
       "source": "/(assets|favicon.png|logo.png|logo-white.png|symbol.png)/(.*)",
       "headers": [
         {

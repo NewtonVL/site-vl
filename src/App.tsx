@@ -6,6 +6,7 @@ import { Purpose } from './components/Purpose';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { BenefitsPage } from './components/BenefitsPage';
+import { SitesLandingPage } from './components/SitesLandingPage';
 
 export function App() {
   const [currentPath, setCurrentPath] = useState(() => {
@@ -22,7 +23,7 @@ export function App() {
   }, []);
 
   useEffect(() => {
-    if (currentPath !== '/beneficios') {
+    if (currentPath !== '/beneficios' && currentPath !== '/sites') {
       document.title = "VL — Vitrine Local | Conectando pessoas, negócios e oportunidades";
     }
   }, [currentPath]);
@@ -32,6 +33,11 @@ export function App() {
     setCurrentPath(path.replace(/\/+$/, '') || '/');
     window.scrollTo({ top: 0, behavior: 'instant' });
   };
+
+  // Rota da Landing Page Premium de Sites (Ativada para implementação e testes)
+  if (currentPath === '/sites') {
+    return <SitesLandingPage onNavigateHome={() => navigate('/')} />;
+  }
 
   // Rota de Benefícios Exclusivos (White Label)
   if (currentPath === '/beneficios') {

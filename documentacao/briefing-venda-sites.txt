@@ -1,0 +1,498 @@
+# BRIEFING OFICIAL V2 — LANDING PAGE PREMIUM | VITRINE LOCAL
+
+## 1. Objetivo do projeto
+
+Criar uma Landing Page de altíssimo padrão visual e tecnológico para comercializar sites profissionais, cinematográficos e personalizados para empresas, comércios, estabelecimentos e profissionais.
+
+**Responsabilidades:**
+- **Vitrine Local:** marca responsável pela comercialização, relacionamento e contratação.
+- **NEWNEO Tecnologia:** empresa responsável pela criação e desenvolvimento tecnológico dos sites.
+
+**Endereço preferencial:**
+https://www.vitrinelocal.com.br/sites
+
+**Alternativa técnica:**
+https://sites.vitrinelocal.com.br
+
+A escolha definitiva deverá considerar a arquitetura do projeto existente.
+
+**Regra obrigatória:** preservar integralmente o funcionamento do site principal e da página `/beneficios`, sem alterações ou refatorações não solicitadas.
+
+---
+
+## 2. Conceito comercial — Nosso grande diferencial
+
+**CONHEÇA SEU SITE ANTES DE CONTRATAR!**
+
+Diferentemente do modelo tradicional, no qual o cliente contrata um site sem conhecer previamente o resultado, nossa proposta é apresentar uma demonstração personalizada já desenvolvida para o negócio dele.
+
+O processo comercial será:
+
+1. Identificamos potenciais clientes através do Google, redes sociais e outros canais.
+2. Analisamos as informações públicas e a identidade visual do estabelecimento.
+3. Criamos uma demonstração personalizada utilizando Inteligência Artificial e tecnologia profissional.
+4. Hospedamos essa demonstração em um subdomínio da NEWNEO.
+5. Apresentamos o site ao potencial cliente.
+6. O cliente conhece a proposta visual antes de decidir contratar.
+7. Após a contratação, finalizamos os detalhes e a personalização definitiva.
+
+**Mensagem central:**
+
+"Você não precisa imaginar como será seu novo site. Nós mostramos antes de você contratar."
+
+Essa ideia deve ser um dos principais argumentos visuais e comerciais da página.
+
+---
+
+## 3. Público-alvo
+
+A oferta contempla diferentes nichos:
+
+- Comércios e estabelecimentos locais.
+- Restaurantes, hamburguerias, bares e cafeterias.
+- Barbearias, salões de beleza e clínicas.
+- Lojas e empresas de serviços.
+- Profissionais autônomos.
+- Profissionais liberais.
+- Pequenas e médias empresas.
+
+A linguagem deve ser acessível, persuasiva e profissional, com foco no empresário e não no desenvolvedor de tecnologia.
+
+---
+
+## 4. Posicionamento e proposta de valor
+
+**Não vendemos simplesmente sites. Entregamos uma nova presença digital para os negócios.**
+
+Benefícios a comunicar:
+
+- Mais credibilidade e autoridade.
+- Imagem profissional e moderna.
+- Diferenciação em relação à concorrência.
+- Facilidade para clientes encontrarem informações e entrarem em contato.
+- Maior preparação para ações de marketing e divulgação.
+- Novas oportunidades comerciais.
+
+Aproveitar o momento de encerramento de 2026 e início de 2027.
+
+**Conceito sazonal:**
+
+"Termine 2026 em evidência. Comece 2027 com seu negócio em outro nível."
+
+A campanha sazonal deve ser facilmente atualizável posteriormente, sem comprometer a estrutura permanente da LP.
+
+---
+
+## 5. Referências institucionais e visuais
+
+Antes de desenvolver a página, analisar os seguintes sites.
+
+### Vitrine Local — Marca comercial
+
+https://www.vitrinelocal.com.br/
+
+https://www.vitrinelocal.com.br/beneficios
+
+Consultar identidade visual, linguagem institucional, estrutura existente e padrões relevantes.
+
+### NEWNEO — Desenvolvimento tecnológico
+
+https://newneo.com.br/
+
+Consultar a identidade visual, apresentação institucional, linguagem e referências tecnológicas da empresa.
+
+### BioPro — Produto incluído no pacote
+
+https://bioprolink.com.br/
+
+Utilizar como referência para apresentar corretamente o produto BioPro e seu benefício de centralização de links.
+
+**Importante:** não misturar indiscriminadamente as identidades visuais das três marcas. A LP deverá priorizar a identidade comercial da Vitrine Local, com apresentação da NEWNEO como responsável tecnológica e do BioPro como benefício complementar.
+
+---
+
+## 6. Oferta — O que o cliente recebe
+
+### A. Site profissional cinematográfico
+
+- Design exclusivo, moderno e premium.
+- Identidade visual personalizada.
+- Experiência responsiva para celulares, tablets e computadores.
+- Carregamento rápido e otimização de desempenho.
+- Integração com WhatsApp.
+- Integração com redes sociais.
+- Estrutura inicial otimizada para SEO.
+- Preparação para receber tráfego de campanhas patrocinadas.
+- Botões estratégicos de contato e conversão.
+- Integração com Google Maps, quando aplicável.
+- HTTPS e boas práticas de segurança.
+- Apresentação profissional de produtos, serviços e informações.
+
+### B. Kit Instagram profissional
+
+O cliente receberá três materiais exclusivos para fixar em seu perfil:
+
+- **2 imagens profissionais** personalizadas para o negócio.
+- **1 vídeo de até 30 segundos** com personagem 3D.
+
+O personagem poderá ser:
+
+- Avatar realístico do proprietário, mediante autorização e fornecimento de referências adequadas.
+- Personagem estilizado em 3D, no formato de boneco.
+
+### C. BioPro — 12 meses incluídos
+
+Acesso ao BioPro durante 12 meses para organizar e divulgar os principais links do negócio.
+
+Permite reunir os canais digitais em uma página personalizada.
+
+Destacar esse benefício visualmente, com mockup e referência ao produto oficial.
+
+---
+
+## 7. Política comercial — Não divulgar preços na LP
+
+**REGRA OBRIGATÓRIA: NÃO EXIBIR PREÇOS OU VALORES FIXOS NA LANDING PAGE.**
+
+Os investimentos serão personalizados conforme:
+
+- Nicho e características do estabelecimento.
+- Modelo e complexidade do site.
+- Funcionalidades e necessidades específicas.
+- Escopo final da contratação.
+
+Os valores serão informados no atendimento pelo WhatsApp.
+
+### Condição comercial a destacar
+
+**PARCELE EM ATÉ 10 VEZES NO CARTÃO!**
+
+Essa facilidade deve receber destaque visual na página, especialmente nas seções de conversão.
+
+Sugestões de CTA:
+
+- **QUERO CONTRATAR MEU SITE**
+- **QUERO CONHECER AS CONDIÇÕES**
+- **FALAR COM UM ESPECIALISTA**
+- **QUERO MEU SITE PROFISSIONAL**
+
+Evitar botões genéricos ou chamadas que criem etapas desnecessárias.
+
+---
+
+## 8. Estrutura da Landing Page
+
+### SEÇÃO 1 — Hero cinematográfico
+
+A primeira dobra deve transmitir imediatamente uma experiência tecnológica de alto padrão.
+
+Headline sugerida:
+
+**SEU NEGÓCIO MERECE UM SITE EXTRAORDINÁRIO.**
+
+Subheadline:
+
+"Sites profissionais, cinematográficos e personalizados para destacar sua marca, conquistar credibilidade e começar 2027 em outro nível."
+
+Complemento de impacto:
+
+**E você pode conhecer seu novo site antes de contratar!**
+
+Elementos visuais:
+
+- Mockups sofisticados de sites reais em desktop e celular.
+- Composição cinematográfica.
+- Animações elegantes.
+- Elementos de profundidade e movimento discretos.
+- CTA claramente visível.
+
+### SEÇÃO 2 — Nosso maior diferencial
+
+Título obrigatório ou equivalente:
+
+# CONHEÇA SEU SITE ANTES DE CONTRATAR!
+
+Explicar de forma clara e visual que a Vitrine Local pode apresentar uma demonstração personalizada do site do estabelecimento antes da decisão de compra.
+
+Sugestão de frase:
+
+"Enquanto outras empresas prometem como seu site poderá ficar, nós mostramos uma demonstração criada especialmente para seu negócio."
+
+Esta seção deve provocar surpresa, curiosidade e desejo.
+
+Distinguir sempre demonstração de site finalizado e contratado.
+
+### SEÇÃO 3 — Muito mais que um site
+
+Apresentar os principais benefícios:
+
+- Credibilidade.
+- Presença digital.
+- Diferenciação competitiva.
+- Facilidade de contato.
+- Experiência profissional.
+- Preparação para divulgação e marketing.
+
+Conectar os recursos tecnológicos a benefícios comerciais concretos.
+
+### SEÇÃO 4 — Tudo o que está incluído
+
+Apresentar três grandes componentes:
+
+**1. Site Profissional Premium**
+
+**2. Kit Instagram — 2 imagens + 1 vídeo 3D**
+
+**3. BioPro — 12 meses de acesso**
+
+Utilizar mockups, composições visuais e apresentações de alto padrão.
+
+A seção deve transmitir que o cliente está adquirindo uma solução integrada de presença digital.
+
+### SEÇÃO 5 — Portfólio e demonstrações reais
+
+Esta seção é uma das mais importantes de toda a LP.
+
+Apresentar projetos desenvolvidos com recursos visuais sofisticados, preferencialmente através de mockups reais, capturas de tela de alta qualidade e links para navegação.
+
+**Sites de referência para o portfólio:**
+
+1. https://premium-burguer.newneo.com.br/
+2. https://newneo.com.br/
+3. https://bioprolink.com.br/
+4. https://bv.packfiguras.com.br/
+5. https://packfiguras.com.br/
+6. http://titanium-blindagens.newneo.com.br/
+
+Inspecionar os sites e selecionar imagens e elementos que demonstrem efetivamente a qualidade do trabalho.
+
+Verificar disponibilidade, qualidade e funcionamento dos endereços antes de publicá-los.
+
+A apresentação deve considerar:
+
+- Mockups de desktop e smartphone.
+- Identidade visual de cada projeto.
+- Diferentes segmentos atendidos.
+- Transições e interações sofisticadas.
+- Possibilidade de abrir os projetos em novas abas.
+
+**Não utilizar imagens genéricas para representar projetos reais.**
+
+Caso algum endereço esteja indisponível, informar antes de incluí-lo.
+
+### SEÇÃO 6 — Como funciona
+
+Apresentação simples em etapas:
+
+**01 — Conheça a demonstração**
+
+Apresentamos uma proposta visual personalizada para seu negócio.
+
+**02 — Escolha sua solução**
+
+Definimos os detalhes e o modelo mais adequado.
+
+**03 — Contrate com facilidade**
+
+Receba as condições comerciais e parcele em até 10 vezes no cartão.
+
+**04 — Coloque seu negócio em evidência**
+
+Finalizamos a personalização e realizamos a entrega conforme as condições contratadas.
+
+### SEÇÃO 7 — Condições comerciais
+
+Reforçar os benefícios do pacote completo.
+
+Não exibir valores.
+
+Destacar:
+
+**INVISTA NA IMAGEM DO SEU NEGÓCIO E PARCELE EM ATÉ 10 VEZES!**
+
+CTA:
+
+**QUERO CONHECER AS CONDIÇÕES**
+
+Encaminhar para o WhatsApp comercial da Vitrine Local, usando número oficial a ser confirmado na implementação.
+
+### SEÇÃO 8 — Perguntas frequentes
+
+Responder objetivamente:
+
+- Meu site já está pronto?
+- Posso conhecer uma demonstração antes de contratar?
+- O site funciona no celular?
+- Posso integrar WhatsApp e redes sociais?
+- O site pode aparecer no Google?
+- Como funciona o pagamento?
+- Posso parcelar em até 10 vezes?
+- O que está incluído no pacote?
+- O domínio e a hospedagem estão incluídos?
+- Como funciona a personalização?
+- O que recebo de conteúdo para Instagram?
+- Como funciona o acesso ao BioPro?
+
+Não inventar respostas para condições operacionais ainda não definidas.
+
+### SEÇÃO 9 — CTA final
+
+Criar um encerramento visual marcante e persuasivo.
+
+Headline:
+
+**SEU NEGÓCIO ESTÁ PRONTO PARA UM NOVO NÍVEL?**
+
+Complemento:
+
+"Entre em 2027 com uma presença digital à altura da qualidade do seu negócio."
+
+CTA:
+
+**QUERO MEU SITE PROFISSIONAL**
+
+Reforçar parcelamento em até 10 vezes.
+
+---
+
+## 9. Diretrizes visuais — PRIORIDADE MÁXIMA
+
+**ESTA LANDING PAGE PRECISA SER UM DOS MELHORES EXEMPLOS DA QUALIDADE DOS SITES QUE ESTAMOS VENDENDO.**
+
+Essa é uma exigência central do projeto.
+
+A página será nossa vitrine tecnológica e comercial. Portanto, não poderá parecer um template comum ou uma LP genérica de agência.
+
+Buscamos uma experiência:
+
+- Cinematográfica.
+- Sofisticada.
+- Memorável.
+- Elegante.
+- Tecnologicamente avançada.
+- Visualmente impactante.
+- Altamente profissional.
+- Otimizada para conversões.
+
+### Requisitos de design
+
+- Direção de arte premium.
+- Tipografia sofisticada e hierarquia visual impecável.
+- Animações fluidas e discretas.
+- Microinterações de alto padrão.
+- Composições tridimensionais quando agregarem valor.
+- Scroll storytelling quando adequado.
+- Uso estratégico de vídeos, imagens e mockups.
+- Excelente contraste e legibilidade.
+- Componentes responsivos cuidadosamente projetados.
+- Experiência mobile tão refinada quanto a desktop.
+- Otimização agressiva dos recursos visuais.
+- Carregamento rápido.
+- Acessibilidade e boas práticas de UX.
+
+**IMPORTANTE:** cinematográfico não significa excesso de animações, efeitos pesados ou distrações.
+
+A experiência deve combinar impacto visual, desempenho e facilidade de contratação.
+
+### Critério de aprovação
+
+Ao visitar essa LP, um empresário deve pensar:
+
+"Se a página deles é tão profissional assim, imagine o que podem fazer pelo meu negócio!"
+
+O resultado deve servir como referência para nossos próprios serviços.
+
+---
+
+## 10. Estratégia de conversão
+
+A LP atenderá dois públicos.
+
+### Cliente prospectado via WhatsApp
+
+Já recebeu ou conhecerá uma demonstração personalizada.
+
+Precisa encontrar rapidamente os benefícios e as condições comerciais.
+
+Criar links diretos para seções estratégicas, incluindo:
+
+`/sites#contratar`
+
+### Visitante espontâneo
+
+Ainda não possui uma demonstração.
+
+Precisa conhecer a proposta, visualizar o portfólio e solicitar atendimento.
+
+### Requisitos
+
+- CTAs objetivos.
+- Navegação intuitiva.
+- WhatsApp comercial em destaque.
+- Mensagens pré-preenchidas contextualizadas.
+- Poucas etapas para entrar em contato.
+- Navegação mobile otimizada.
+- Possibilidade futura de integração com links personalizados para cada prospect.
+
+---
+
+## 11. Cuidados técnicos e operacionais
+
+- Preservar o site principal.
+- Preservar a página `/beneficios`.
+- Verificar a arquitetura do projeto antes de implementar.
+- Manter compatibilidade com Vercel.
+- Aplicar boas práticas de SEO técnico.
+- Otimizar imagens, vídeos e demais recursos.
+- Evitar bibliotecas e efeitos desnecessariamente pesados.
+- Garantir acessibilidade e boa experiência em dispositivos móveis.
+- Preparar estrutura para ferramentas de análise e mensuração de conversões, quando autorizadas.
+- Não inventar depoimentos, avaliações ou resultados.
+- Não prometer posicionamento garantido no Google.
+- Não apresentar resultados comerciais como garantidos.
+- Não divulgar preços na página.
+- Não presumir condições de hospedagem, manutenção, suporte ou renovação.
+- Não utilizar informações pessoais de potenciais clientes sem autorização adequada.
+- Manter a identidade visual e a apresentação da Vitrine Local coerentes com a marca existente.
+
+---
+
+## 12. Recurso estratégico futuro — Não implementar agora
+
+Registrar como evolução futura:
+
+**LINKS PERSONALIZADOS DE CONTRATAÇÃO VINCULADOS À DEMONSTRAÇÃO DE CADA CLIENTE.**
+
+Objetivo:
+
+Quando um potencial cliente acessar a LP a partir da demonstração de seu site, o sistema poderá identificar o estabelecimento e vincular sua intenção de contratação ao projeto correspondente.
+
+Benefícios esperados:
+
+- Menos repetição de informações.
+- Atendimento mais rápido.
+- Identificação da demonstração de origem.
+- Maior facilidade para fechamento.
+- Melhor acompanhamento das oportunidades comerciais.
+
+**Neste momento, apenas registrar a possibilidade na arquitetura. Não implementar sem autorização posterior.**
+
+---
+
+## 13. Diretriz final ao Antigravity
+
+Nossa missão é criar uma Landing Page capaz de demonstrar, por sua própria qualidade, o nível dos sites que a Vitrine Local e a NEWNEO podem entregar.
+
+**A página não deve apenas explicar o que vendemos. Ela deve provar visualmente a qualidade da nossa entrega.**
+
+Prioridades:
+
+1. Impacto visual premium e cinematográfico.
+2. Credibilidade e apresentação profissional.
+3. Demonstração real da qualidade do portfólio.
+4. Clareza da oferta e de seus benefícios.
+5. Conversão com mínimo atrito.
+6. Desempenho excepcional.
+7. Preservação integral da estrutura existente.
+
+**Antes de iniciar a implementação, analisar os sites de referência e o projeto atual, apresentar a direção visual proposta e o plano de execução. Não realizar alterações até a aprovação do planejamento.**
