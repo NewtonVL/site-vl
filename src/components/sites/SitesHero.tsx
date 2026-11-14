@@ -1,49 +1,97 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, MessageCircle, Monitor, ShieldCheck, Flame } from 'lucide-react';
+import { ArrowRight, MessageCircle, Monitor, ShieldCheck, Sparkles } from 'lucide-react';
 import { SITES_CONFIG, buildWhatsAppLink } from '../../config/sitesLanding';
 
 export const SitesHero: React.FC = () => {
   const { seasonalCampaign, hero } = SITES_CONFIG;
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
-  const [hasMouse, setHasMouse] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  const [canStreamVideo, setCanStreamVideo] = useState(true);
 
-  // Status de disponibilidade do vídeo final autorizado (atualmente pendente de produção oficial)
-  // Estrutura preparada para receber o arquivo final sem quebrar a página
-  const finalCinematicVideoPath: string | null = null; // Ex: "/assets/hero-cinematic.mp4"
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
-      setHasMouse(mediaQuery.matches);
+    if (typeof window === 'undefined') return;
+
+    // Detecção rigorosa de prefers-reduced-motion
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(motionQuery.matches);
+    const handleMotionChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    motionQuery.addEventListener('change', handleMotionChange);
+
+    // Economia de dados / conexões restritas no mobile
+    const navConn = (navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    if (navConn && (navConn.saveData || navConn.effectiveType === '2g')) {
+      setCanStreamVideo(false);
     }
+
+    return () => {
+      motionQuery.removeEventListener('change', handleMotionChange);
+    };
   }, []);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!hasMouse || !containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const xPos = (e.clientX - rect.left) / rect.width - 0.5;
-    const yPos = (e.clientY - rect.top) / rect.height - 0.5;
-
-    setTilt({
-      x: -yPos * 4,
-      y: xPos * 4,
-    });
-  };
-
-  const handleMouseLeave = () => {
-    setTilt({ x: 0, y: 0 });
-  };
-
   return (
-    <section className="relative pt-6 pb-16 md:pt-12 md:pb-24 overflow-hidden bg-gradient-to-b from-dark-950 via-dark-900 to-dark-950 text-white border-b border-white/5">
+    <section className="relative min-h-[640px] lg:min-h-[720px] flex items-center pt-8 pb-16 md:pt-16 md:pb-24 overflow-hidden bg-dark-950 text-white border-b border-white/5">
+      {/* 
+        CAMADA DE VÍDEO DE FUNDO CINEMATOGRÁFICO (DESKTOP & TELAS GRANDES):
+        O vídeo gerado no Google Flow atua como cenário imersivo de fundo.
+        A área escura natural do vídeo à esquerda acomoda com alto contraste a headline e os CTAs em HTML,
+        enquanto a galeria de projetos iluminada fica exposta à direita.
+      */}
+      <div className="hidden lg:block absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+        {/* Poster estático base de alta resolução: visível durante carregamento ou em prefers-reduced-motion */}
+        <img
+          src="/assets/hero-poster.webp"
+          alt="Cenário conceitual cinematográfico da Vitrine Local & NEWNEO"
+          className="absolute inset-0 w-full h-full object-cover object-[75%_center] z-0"
+          loading="eager"
+        />
+
+        {/* Vídeo HTML5 desktop otimizado com loop contínuo e transição suave */}
+        {!reducedMotion && canStreamVideo && (
+          <video
+            ref={desktopVideoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            poster="/assets/hero-poster.webp"
+            aria-hidden="true"
+            onLoadedData={() => setVideoLoaded(true)}
+            className={`absolute inset-0 w-full h-full object-cover object-[75%_center] z-[1] transition-opacity duration-700 ease-out ${
+              videoLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <source src="/assets/hero-cinematic-1080p.mp4" type="video/mp4" />
+          </video>
+        )}
+
+        {/* Gradiente direcional da esquerda: protege a legibilidade do texto e CTAs sobre a área escura */}
+        <div
+          className="absolute inset-0 z-[2] bg-gradient-to-r from-dark-950 via-dark-950/85 lg:via-dark-950/80 to-transparent"
+          aria-hidden="true"
+        />
+
+        {/* Vinhetas superior e inferior para transição suave com o header e a seção seguinte */}
+        <div
+          className="absolute inset-x-0 top-0 h-28 z-[2] bg-gradient-to-b from-dark-950 via-dark-950/70 to-transparent"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-28 z-[2] bg-gradient-to-t from-dark-950 via-dark-950/80 to-transparent"
+          aria-hidden="true"
+        />
+      </div>
+
       {/* Luz ambiente de profundidade */}
       <div
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[450px] bg-brand/15 rounded-full blur-[170px] pointer-events-none -z-10"
+        className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brand/15 rounded-full blur-[160px] pointer-events-none z-0"
         aria-hidden="true"
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Banner Sazonal Compacto */}
         {seasonalCampaign.active && (
           <div className="flex justify-start mb-6">
@@ -58,10 +106,9 @@ export const SitesHero: React.FC = () => {
           </div>
         )}
 
-        {/* Grid Principal: Headline à Esquerda + Vitrine Cinematográfica à Direita (Visível na 1ª tela) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-          {/* Coluna de Texto & Ação (5 colunas no Desktop) */}
-          <div className="lg:col-span-5 text-left space-y-6">
+        {/* Grid de Conteúdo: Coluna de Texto & Ação à Esquerda */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="lg:col-span-7 xl:col-span-6 text-left space-y-6">
             <h1 className="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight leading-[1.05]">
               CONHEÇA SEU SITE <br />
               <span className="text-brand">
@@ -72,6 +119,57 @@ export const SitesHero: React.FC = () => {
             <p className="text-base sm:text-xl font-bold text-zinc-200 leading-snug tracking-tight">
               {hero.supportHeadline}
             </p>
+
+            {/* 
+              VITRINE CINEMATOGRÁFICA DEDICADA NO CELULAR / TABLET (< lg):
+              No mobile, a tela vertical impediria a visualização do vídeo de fundo sem que o texto cobrisse os projetos.
+              Aqui o vídeo é exibido em moldura 16:9 focalizada nos projetos (object-[75%_center]),
+              garantindo que o visitante veja a atmosfera visual sem nenhuma sobreposição do texto!
+            */}
+            <div className="lg:hidden my-6">
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-dark-900 group">
+                <div className="relative aspect-video w-full overflow-hidden">
+                  {/* Poster estático base */}
+                  <img
+                    src="/assets/hero-poster.webp"
+                    alt="Cenário conceitual cinematográfico de apresentação da Vitrine Local"
+                    className="w-full h-full object-cover object-[75%_center]"
+                    loading="eager"
+                  />
+                  {/* Vídeo mobile otimizado (720p, leve e com loop contínuo) */}
+                  {!reducedMotion && canStreamVideo && (
+                    <video
+                      ref={mobileVideoRef}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      poster="/assets/hero-poster.webp"
+                      aria-hidden="true"
+                      className="absolute inset-0 w-full h-full object-cover object-[75%_center]"
+                    >
+                      <source src="/assets/hero-cinematic-720p.webm" type="video/webm" />
+                      <source src="/assets/hero-cinematic-720p.mp4" type="video/mp4" />
+                    </video>
+                  )}
+                  {/* Badge de transparência conceitual */}
+                  <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-md bg-dark-950/85 backdrop-blur-md border border-white/10 text-[10px] font-semibold text-zinc-300">
+                    Cenário Conceitual 3D
+                  </div>
+                  {/* Faixa inferior de ancoragem ao portfólio real */}
+                  <div className="absolute inset-x-0 bottom-0 p-2.5 bg-gradient-to-t from-dark-950/95 via-dark-950/80 to-transparent flex items-center justify-between text-[11px] text-zinc-300">
+                    <span className="flex items-center gap-1.5 font-medium">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      Atmosfera visual de criação
+                    </span>
+                    <a href="#portfolio" className="text-brand font-bold hover:underline flex items-center gap-1">
+                      Ver portfólio real <ArrowRight className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-normal">
               Para empresas já prospectadas pela nossa equipe, apresentamos uma demonstração conceitual personalizada desenvolvida para validação antes da decisão. Para quem está conhecendo a Vitrine Local agora, converse conosco para entender a proposta ideal para o seu negócio.
@@ -106,137 +204,27 @@ export const SitesHero: React.FC = () => {
             </div>
           </div>
 
-          {/* Coluna da Vitrine Cinematográfica Protagonista (7 colunas no Desktop) */}
-          <div
-            ref={containerRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            className="lg:col-span-7 relative"
-            style={{ perspective: '1200px' }}
-          >
-            {/* Brilho e profundidade atrás do mockup */}
-            <div className="absolute -inset-2 bg-gradient-to-r from-brand/25 via-orange-500/15 to-amber-500/20 rounded-3xl blur-2xl opacity-70 pointer-events-none -z-10" />
-
-            {/* Container Principal do Mockup de Produção */}
-            <div
-              className="rounded-2xl sm:rounded-3xl bg-dark-900 border border-white/10 overflow-hidden shadow-2xl backdrop-blur-md transition-transform duration-200 ease-out motion-reduce:transform-none"
-              style={{
-                transform: hasMouse
-                  ? `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`
-                  : 'none',
-              }}
-            >
-              {/* Barra Superior do Navegador — Rótulo Neutro em Português do Brasil */}
-              <div className="bg-dark-950 px-4 sm:px-6 py-3 border-b border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-yellow-500/80 inline-block" />
-                  <span className="w-3 h-3 rounded-full bg-green-500/80 inline-block" />
-                </div>
-                <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-dark-900 border border-white/5 text-[11px] text-zinc-300 max-w-[260px] sm:max-w-md truncate">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block shrink-0"></span>
-                  <span className="font-medium text-zinc-200">Ambiente de Demonstração Visual</span>
-                </div>
-                <div className="text-[11px] font-bold text-brand uppercase tracking-wider hidden sm:block">
-                  Demonstrações & Referências
-                </div>
+          {/* 
+            ÁREA DIREITA NO DESKTOP:
+            A galeria de projetos do vídeo de fundo fica livre e em destaque aqui.
+            Inserimos uma ancoragem sutil para orientar a atenção até o portfólio real navegável.
+          */}
+          <div className="hidden lg:flex lg:col-span-5 xl:col-span-6 justify-end items-end h-full pointer-events-none pb-4">
+            <div className="p-4 rounded-2xl bg-dark-950/70 backdrop-blur-md border border-white/10 shadow-2xl max-w-xs text-left pointer-events-auto">
+              <div className="flex items-center gap-2 text-xs font-bold text-white mb-1">
+                <Sparkles className="w-3.5 h-3.5 text-brand" />
+                <span>Cenário Conceitual 3D</span>
               </div>
-
-              {/* Área do Palco: Vídeo Futuro OU Composição Multissegmento com Imagens Reais */}
-              <div className="relative bg-dark-950 min-h-[280px] sm:min-h-[360px] flex flex-col justify-center overflow-hidden">
-                {finalCinematicVideoPath ? (
-                  /* Integração preparada para o vídeo cinematográfico com fallback e suporte a movimento reduzido */
-                  <div className="relative w-full h-full min-h-[280px] sm:min-h-[360px]">
-                    {/* Imagem estática do poster sempre presente na camada base: garante visualização imediata, suporte a falha e a prefers-reduced-motion */}
-                    <img
-                      src="/assets/hero-poster.webp"
-                      alt="Vitrine cinematográfica de projetos reais da Vitrine Local & NEWNEO"
-                      className="absolute inset-0 w-full h-full object-cover z-0"
-                      loading="eager"
-                    />
-                    {/* Vídeo sobreposto que respeita prefers-reduced-motion (ao ser ocultado, o poster base permanece visível e nítido) */}
-                    <video
-                      src={finalCinematicVideoPath}
-                      poster="/assets/hero-poster.webp"
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
-                      aria-hidden="true"
-                      className="relative z-10 w-full h-full object-cover motion-reduce:hidden"
-                    />
-                  </div>
-                ) : (
-                  /* Composição Multissegmento com Capturas Reais em Alta Fidelidade (Estado de Produção Atual) */
-                  <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center bg-gradient-to-b from-dark-900/60 to-black">
-                    {/* Projeto 1: Premium Burger (Gastronomia) */}
-                    <div className="space-y-2 group">
-                      <div className="flex items-center justify-between text-[11px] text-zinc-400 px-1">
-                        <span className="font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-brand inline-block" />
-                          Gastronomia & Delivery
-                        </span>
-                        <span className="text-zinc-400 text-[10px]">Ao Vivo</span>
-                      </div>
-                      <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg bg-black relative">
-                        <img
-                          src="/assets/portfolio/premium-burger.webp"
-                          alt="Interface real do projeto Premium Burger desenvolvido pela NEWNEO"
-                          className="w-full h-auto object-cover max-h-[190px] sm:max-h-[220px] group-hover:scale-[1.02] transition-transform duration-300"
-                          loading="eager"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                        <div className="absolute bottom-2.5 left-2.5 right-2.5 text-left">
-                          <span className="text-xs font-bold text-white block drop-shadow">Premium Burger Artesanal</span>
-                          <span className="text-[10px] text-zinc-300 block drop-shadow">Cardápio visual e pedidos diretos</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Projeto 2: Titanium Blindagens (Engenharia) */}
-                    <div className="space-y-2 group">
-                      <div className="flex items-center justify-between text-[11px] text-zinc-400 px-1">
-                        <span className="font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-zinc-300 inline-block" />
-                          Engenharia & Blindagens
-                        </span>
-                        <span className="text-zinc-400 text-[10px]">Institucional</span>
-                      </div>
-                      <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg bg-black relative">
-                        <img
-                          src="/assets/portfolio/titanium-blindagens.webp"
-                          alt="Interface real do projeto Titanium Blindagens desenvolvido pela NEWNEO"
-                          className="w-full h-auto object-cover max-h-[190px] sm:max-h-[220px] group-hover:scale-[1.02] transition-transform duration-300"
-                          loading="eager"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                        <div className="absolute bottom-2.5 left-2.5 right-2.5 text-left">
-                          <span className="text-xs font-bold text-white block drop-shadow">Titanium Blindagens</span>
-                          <span className="text-[10px] text-zinc-300 block drop-shadow">Autoridade e prestígio corporativo</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Rodapé Interno do Mockup */}
-                <div className="px-5 py-3 bg-dark-950/90 border-t border-white/5 flex items-center justify-between text-xs text-zinc-400">
-                  <div className="flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-brand shrink-0" />
-                    <span className="text-[11px] text-zinc-300">
-                      Identidade visual autoral concebida pela NEWNEO Tecnologia
-                    </span>
-                  </div>
-                  <a
-                    href="#portfolio"
-                    className="text-white hover:text-brand font-semibold text-xs inline-flex items-center gap-1 transition-colors duration-200 shrink-0"
-                  >
-                    <span>Ver todos</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </a>
-                </div>
-              </div>
+              <p className="text-[11px] text-zinc-300 leading-snug mb-2.5">
+                Direção visual de apresentação. Conheça as interfaces e capturas reais no portfólio interativo abaixo.
+              </p>
+              <a
+                href="#portfolio"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-400 transition-colors"
+              >
+                <span>Explorar projetos reais</span>
+                <ArrowRight className="w-3 h-3" />
+              </a>
             </div>
           </div>
         </div>
