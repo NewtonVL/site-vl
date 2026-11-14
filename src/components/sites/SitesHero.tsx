@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, MessageCircle, Monitor, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, MessageCircle, ShieldCheck, Sparkles } from 'lucide-react';
 import { SITES_CONFIG, buildWhatsAppLink } from '../../config/sitesLanding';
 
 export const SitesHero: React.FC = () => {
-  const { seasonalCampaign, hero } = SITES_CONFIG;
+  const { seasonalCampaign } = SITES_CONFIG;
   const [reducedMotion, setReducedMotion] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [canStreamVideo, setCanStreamVideo] = useState(true);
@@ -92,41 +92,44 @@ export const SitesHero: React.FC = () => {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        {/* Banner Sazonal Compacto */}
-        {seasonalCampaign.active && (
-          <div className="flex justify-start mb-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-zinc-300 backdrop-blur-md">
-              <span className="flex h-2 w-2 relative">
-                <span className="motion-reduce:hidden animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
-              </span>
-              <span className="font-bold text-brand-300">{seasonalCampaign.tag}:</span>
-              <span className="text-zinc-200">{seasonalCampaign.headline}</span>
+        {/* Grid de Conteúdo: Coluna de Texto & Ação com Direção de Arte Editorial */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+          <div className="lg:col-span-7 xl:col-span-6 text-left flex flex-col space-y-6">
+            
+            {/* Bloco 1: Abertura Editorial (Campanha, Headline e Subtítulo) */}
+            <div className="order-1 space-y-6">
+              {/* Tratamento Editorial Discreto para a Campanha Sazonal (sem truncar texto em nenhuma tela) */}
+              {seasonalCampaign.active && (
+                <div className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-zinc-300">
+                  <span className="inline-flex items-center gap-1.5 text-zinc-200 font-semibold tracking-wide">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0" />
+                    {seasonalCampaign.tag}:
+                  </span>
+                  <span className="text-zinc-400 font-normal leading-relaxed">
+                    {seasonalCampaign.headline}
+                  </span>
+                </div>
+              )}
+
+              {/* Headline com Tipografia Editorial e Ritmo Refinado */}
+              <h1 className="text-3xl sm:text-5xl lg:text-5xl xl:text-[3.6rem] font-extrabold text-white tracking-[-0.03em] leading-[1.06] [text-wrap:balance]">
+                CONHEÇA SEU SITE <br />
+                <span className="text-brand">
+                  ANTES DE CONTRATAR
+                </span>
+              </h1>
+
+              {/* Subtítulo de Apoio com Propósito Concreto */}
+              <p className="text-base sm:text-xl font-medium text-zinc-200 leading-snug tracking-tight [text-wrap:pretty]">
+                Validamos a identidade visual e a estrutura do seu projeto antes de qualquer compromisso comercial.
+              </p>
             </div>
-          </div>
-        )}
-
-        {/* Grid de Conteúdo: Coluna de Texto & Ação à Esquerda */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          <div className="lg:col-span-7 xl:col-span-6 text-left space-y-6">
-            <h1 className="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-black text-white tracking-tight leading-[1.05]">
-              CONHEÇA SEU SITE <br />
-              <span className="text-brand">
-                ANTES DE CONTRATAR
-              </span>
-            </h1>
-
-            <p className="text-base sm:text-xl font-bold text-zinc-200 leading-snug tracking-tight">
-              {hero.supportHeadline}
-            </p>
 
             {/* 
-              VITRINE CINEMATOGRÁFICA DEDICADA NO CELULAR / TABLET (< lg):
-              No mobile, a tela vertical impediria a visualização do vídeo de fundo sem que o texto cobrisse os projetos.
-              Aqui o vídeo é exibido em moldura 16:9 focalizada nos projetos (object-[75%_center]),
-              garantindo que o visitante veja a atmosfera visual sem nenhuma sobreposição do texto!
+              Bloco 2: VITRINE CINEMATOGRÁFICA DEDICADA NO CELULAR / TABLET (< lg):
+              No mobile, a tela vertical exibe o vídeo em moldura 16:9 focalizada nos projetos (object-[75%_center]).
             */}
-            <div className="lg:hidden my-6">
+            <div className="order-2 lg:hidden my-2">
               <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-dark-900 group">
                 <div className="relative aspect-video w-full overflow-hidden">
                   {/* Poster estático base */}
@@ -171,36 +174,48 @@ export const SitesHero: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-normal">
-              Para empresas já prospectadas pela nossa equipe, apresentamos uma demonstração conceitual personalizada desenvolvida para validação antes da decisão. Para quem está conhecendo a Vitrine Local agora, converse conosco para entender a proposta ideal para o seu negócio.
-            </p>
-
-            {/* CTAs Principais */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+            {/* 
+              Bloco 3: Ação Protagonista de Conversão
+              No mobile: aparece imediatamente após a vitrine de vídeo (order-3).
+              No desktop: posiciona-se após a distinção dos dois públicos (lg:order-5).
+            */}
+            <div className="order-3 lg:order-5 pt-2 space-y-3">
               <a
                 href={buildWhatsAppLink("spontaneous_visitor")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-3 px-7 py-4 rounded-xl text-base font-bold text-white bg-brand hover:bg-brand-600 shadow-orange-glow transition-colors duration-200 motion-reduce:transform-none transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand focus-visible:outline-none group text-center"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-base font-bold text-white bg-brand hover:bg-brand-600 shadow-orange-glow transition-all duration-200 motion-reduce:transform-none transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand focus-visible:outline-none group text-center"
               >
                 <MessageCircle className="w-5 h-5 text-white shrink-0" />
                 <span>Conversar no WhatsApp</span>
                 <ArrowRight className="w-4 h-4 motion-reduce:transform-none transition-transform duration-200 group-hover:translate-x-1 shrink-0" />
               </a>
 
-              <a
-                href="#portfolio"
-                className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-xl text-sm font-semibold text-zinc-300 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none text-center"
-              >
-                <Monitor className="w-4 h-4 text-brand shrink-0" />
-                <span>Ver Demonstrações</span>
-              </a>
+              {/* Micro Garantia / Condições */}
+              <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium pt-0.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>Demonstração visual prévia • Parcelamento em até 10x no cartão</span>
+              </div>
             </div>
 
-            {/* Micro Garantia / Condições */}
-            <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium pt-1">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>Demonstração visual prévia • Parcelamento em até 10x no cartão</span>
+            {/* 
+              Bloco 4: Distinção Clara e Honesta entre Empresas Prospectadas e Novos Visitantes
+              No mobile: fica posicionado abaixo do botão de CTA (order-4).
+              No desktop: fica acima do botão de CTA (lg:order-4).
+            */}
+            <div className="order-4 lg:order-4 space-y-2.5 text-sm sm:text-base text-zinc-300 leading-relaxed [text-wrap:pretty] pt-1 lg:pt-0">
+              <p className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-2 shrink-0" />
+                <span>
+                  <strong className="text-white font-semibold">Empresas contatadas:</strong> sua equipe pode avaliar a proposta visual já concebida para a sua marca.
+                </span>
+              </p>
+              <p className="flex items-start gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 mt-2 shrink-0" />
+                <span>
+                  <strong className="text-zinc-200 font-medium">Novos contatos:</strong> converse com nosso atendimento pelo WhatsApp para entender o modelo e consultar a viabilidade de uma demonstração.
+                </span>
+              </p>
             </div>
           </div>
 

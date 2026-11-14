@@ -26,3 +26,4 @@ dist-ssr
 # Scratch & temporary media
 documentacao/frames-sites/
 documentacao/videos-sites/
+documentacao/*.pdf
