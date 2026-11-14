@@ -143,21 +143,32 @@ export const SitesHero: React.FC = () => {
               </div>
 
               {/* Área do Palco: Vídeo Futuro OU Composição Multissegmento com Imagens Reais */}
-              <div className="relative bg-black min-h-[280px] sm:min-h-[360px] flex flex-col justify-center overflow-hidden">
+              <div className="relative bg-dark-950 min-h-[280px] sm:min-h-[360px] flex flex-col justify-center overflow-hidden">
                 {finalCinematicVideoPath ? (
-                  /* Integração preparada para o vídeo cinematográfico quando disponível */
-                  <video
-                    src={finalCinematicVideoPath}
-                    poster="/assets/hero-poster.webp"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    className="w-full h-full object-cover motion-reduce:hidden"
-                  />
+                  /* Integração preparada para o vídeo cinematográfico com fallback e suporte a movimento reduzido */
+                  <div className="relative w-full h-full min-h-[280px] sm:min-h-[360px]">
+                    {/* Imagem estática do poster sempre presente na camada base: garante visualização imediata, suporte a falha e a prefers-reduced-motion */}
+                    <img
+                      src="/assets/hero-poster.webp"
+                      alt="Vitrine cinematográfica de projetos reais da Vitrine Local & NEWNEO"
+                      className="absolute inset-0 w-full h-full object-cover z-0"
+                      loading="eager"
+                    />
+                    {/* Vídeo sobreposto que respeita prefers-reduced-motion (ao ser ocultado, o poster base permanece visível e nítido) */}
+                    <video
+                      src={finalCinematicVideoPath}
+                      poster="/assets/hero-poster.webp"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      aria-hidden="true"
+                      className="relative z-10 w-full h-full object-cover motion-reduce:hidden"
+                    />
+                  </div>
                 ) : (
-                  /* Composição Multissegmento com Capturas Reais em Alta Fidelidade */
+                  /* Composição Multissegmento com Capturas Reais em Alta Fidelidade (Estado de Produção Atual) */
                   <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 items-center bg-gradient-to-b from-dark-900/60 to-black">
                     {/* Projeto 1: Premium Burger (Gastronomia) */}
                     <div className="space-y-2 group">
