@@ -1,9 +1,10 @@
 import React from 'react';
-import { Globe, Video, Link2, Check, ExternalLink, ShieldCheck, ArrowRight, PlayCircle } from 'lucide-react';
+import { Globe, Video, Link2, Check, ExternalLink, ShieldCheck, ArrowRight, PlayCircle, Gift } from 'lucide-react';
 import { SITES_CONFIG } from '../../config/sitesLanding';
 
 export const SitesOfferPackage: React.FC = () => {
   const { offer } = SITES_CONFIG;
+  const clubRede = offer.additionalBenefit;
 
   const siteItem = offer.items.find((i) => i.id === 'site')!;
   const kitItem = offer.items.find((i) => i.id === 'kit-instagram')!;
@@ -204,6 +205,41 @@ export const SitesOfferPackage: React.FC = () => {
                 </a>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Benefício adicional: separado dos três componentes da solução */}
+        <div className="rounded-2xl border border-white/10 border-l-2 border-l-brand bg-[#0F1115]/70 p-6 sm:p-8 mb-8">
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-wide uppercase text-zinc-400">
+              <Gift className="w-4 h-4 text-brand" aria-hidden="true" />
+              {clubRede.label}
+            </span>
+            <span className="rounded-full border border-brand/30 bg-brand/10 px-2.5 py-1 text-xs font-semibold text-brand">
+              {clubRede.badge}
+            </span>
+          </div>
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 lg:gap-10">
+            <div className="max-w-3xl">
+              <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-3">
+                {clubRede.title}
+              </h3>
+              <p className="text-sm text-zinc-300 leading-relaxed max-w-2xl">
+                {clubRede.description}
+              </p>
+              <p className="mt-4 pt-4 border-t border-white/10 text-xs text-zinc-400 leading-relaxed">
+                {clubRede.conditions}
+              </p>
+            </div>
+            <a
+              href={clubRede.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors shrink-0 w-full lg:w-auto"
+            >
+              {clubRede.ctaText}
+              <ExternalLink className="w-4 h-4" aria-hidden="true" />
+            </a>
           </div>
         </div>
 

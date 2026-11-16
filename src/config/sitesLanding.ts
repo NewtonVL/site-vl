@@ -176,6 +176,17 @@ export const SITES_CONFIG = {
         highlight: "Produto Oficial BioPro",
       },
     ],
+    additionalBenefit: {
+      label: "Benefício adicional na contratação",
+      badge: "90 dias de acesso ao Clube REDE",
+      title: "Mais vantagens para aproveitar o fim do ano",
+      description:
+        "Além da sua nova presença digital, você poderá aproveitar o período de compras de fim de ano para descobrir descontos em milhares de estabelecimentos parceiros do Clube REDE. Consulte as ofertas disponíveis e as condições de cada parceiro na plataforma.",
+      conditions:
+        "O acesso é destinado ao titular da contratação e termina após 90 dias, sem cobrança automática. Para consultar as condições de renovação, entre em contato com a Vitrine Local.",
+      ctaText: "Conhecer o Clube REDE",
+      url: "https://clube.redeafiliados.com.br/",
+    },
   },
 
   portfolio: {
