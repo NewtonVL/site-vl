@@ -1,5 +1,6 @@
 import React from 'react';
 import { ExternalLink, ArrowUp } from 'lucide-react';
+import { SocialLinks } from '../SocialLinks';
 
 interface SitesFooterProps {
   onNavigateHome: () => void;
@@ -39,6 +40,7 @@ export const SitesFooter: React.FC<SitesFooterProps> = ({ onNavigateHome }) => {
             <div className="text-xs text-zinc-500 font-mono">
               comercial@vitrinelocal.com.br • WhatsApp: (61) 99620-2519
             </div>
+            <SocialLinks className="pt-1" />
           </div>
 
           {/* Technology & Partnership */}

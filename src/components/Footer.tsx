@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowUp } from 'lucide-react';
 import { siteConfig } from '../config/site';
+import { SocialLinks } from './SocialLinks';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -30,6 +31,7 @@ export const Footer: React.FC = () => {
             <p className="text-zinc-400 text-sm leading-relaxed mt-2">
               Aproximando pessoas de empresas e profissionais que fazem parte da vida em suas comunidades.
             </p>
+            <SocialLinks className="mt-5 justify-center md:justify-start" />
           </div>
 
           {/* Quick Navigation Links */}

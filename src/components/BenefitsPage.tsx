@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { BenefitsHeader } from './BenefitsHeader';
 import { BenefitCard } from './BenefitCard';
+import { SocialLinks } from './SocialLinks';
 import { benefitsConfig } from '../config/benefits';
 
 interface BenefitsPageProps {
@@ -170,7 +171,8 @@ export const BenefitsPage: React.FC<BenefitsPageProps> = ({ onNavigateHome }) =>
               </span>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <SocialLinks />
               <button
                 type="button"
                 onClick={onNavigateHome}
