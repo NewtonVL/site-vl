@@ -195,7 +195,7 @@ export const SitesMoreThanASite: React.FC = () => {
           <img
             src="/assets/posicionamento-poster.webp"
             alt=""
-            className="absolute inset-0 w-full h-full object-cover object-center filter blur-[2px] lg:blur-[1.5px] scale-105 z-0 opacity-75 lg:opacity-100"
+            className="absolute inset-0 w-full h-full object-cover object-[62%_center] lg:object-center filter blur-[1px] lg:blur-[1.5px] scale-105 z-0 opacity-100"
             loading="lazy"
             decoding="async"
           />
@@ -234,8 +234,8 @@ export const SitesMoreThanASite: React.FC = () => {
               preload="auto"
               onLoadedData={() => setVideoLoaded(true)}
               onError={() => setVideoFailed(true)}
-              className={`absolute inset-0 w-full h-full object-cover object-center filter blur-[2px] scale-105 z-[1] transition-opacity duration-700 ${
-                videoLoaded ? 'opacity-75' : 'opacity-0'
+              className={`absolute inset-0 w-full h-full object-cover object-[62%_center] filter blur-[1px] scale-105 z-[1] transition-opacity duration-700 ${
+                videoLoaded ? 'opacity-100' : 'opacity-0'
               }`}
               aria-hidden="true"
               tabIndex={-1}
@@ -247,7 +247,7 @@ export const SitesMoreThanASite: React.FC = () => {
 
           {/* Camadas de Escurecimento e Conforto Visual */}
           <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#07080A]/95 via-[#07080A]/85 to-[#07080A]/75 backdrop-blur-[1px] z-[2]" />
-          <div className="block lg:hidden absolute inset-0 bg-gradient-to-b from-[#07080A]/95 via-[#07080A]/90 to-[#07080A]/95 backdrop-blur-[2px] z-[2]" />
+          <div className="block lg:hidden absolute inset-0 bg-gradient-to-b from-[#07080A]/80 via-[#07080A]/55 to-[#07080A]/75 z-[2]" />
 
           {/* Vinhetas superior e inferior para transição suave com as seções adjacentes */}
           <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#090A0C] via-[#090A0C]/80 to-transparent z-[3]" />
