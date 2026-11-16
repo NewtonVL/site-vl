@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, Video, Link2, Check, ExternalLink, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Globe, Video, Link2, Check, ExternalLink, ShieldCheck, ArrowRight, PlayCircle } from 'lucide-react';
 import { SITES_CONFIG } from '../../config/sitesLanding';
 
 export const SitesOfferPackage: React.FC = () => {
@@ -9,11 +9,17 @@ export const SitesOfferPackage: React.FC = () => {
   const kitItem = offer.items.find((i) => i.id === 'kit-instagram')!;
   const bioproItem = offer.items.find((i) => i.id === 'biopro')!;
 
+  const summaryPillars = [
+    { num: '01', name: 'Site Profissional Premium', role: 'Presença própria e conversão' },
+    { num: '02', name: 'Kit Instagram com Personagem 3D', role: 'Inclui vídeo de até 30s + 2 imagens' },
+    { num: '03', name: 'BioPro Link', role: 'Centralizador de canais por 12 meses' },
+  ];
+
   return (
     <section id="solucao" className="relative py-24 lg:py-32 bg-[#090A0C] text-white border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Descentralizado e Editorial */}
-        <div className="max-w-3xl mb-14 sm:mb-16">
+        <div className="max-w-3xl mb-10 sm:mb-12">
           <span className="text-xs font-semibold tracking-wider uppercase text-zinc-400 block mb-3">
             Solução Integrada
           </span>
@@ -25,6 +31,24 @@ export const SitesOfferPackage: React.FC = () => {
           <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal">
             {offer.subtitle}
           </p>
+        </div>
+
+        {/* Visão Imediata dos 3 Componentes da Oferta */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-10 sm:mb-12">
+          {summaryPillars.map((pillar) => (
+            <div
+              key={pillar.num}
+              className="flex items-start gap-3 px-4 py-3.5 rounded-xl bg-[#0F1115]/70 border border-white/10"
+            >
+              <span className="font-mono text-xs font-semibold text-brand mt-0.5 shrink-0">
+                {pillar.num}
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white leading-snug">{pillar.name}</p>
+                <p className="text-xs text-zinc-400 mt-0.5 leading-snug">{pillar.role}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Grid de Soluções: Flagship Central + Multiplicadores em Equilíbrio Visual */}
@@ -84,10 +108,10 @@ export const SitesOfferPackage: React.FC = () => {
           {/* Coluna Direita: Multiplicadores em Paleta Neutra e Harmoniosa */}
           <div className="lg:col-span-5 flex flex-col gap-6 justify-between">
             {/* Componente 02: Kit Instagram 3D */}
-            <div className="rounded-2xl p-7 bg-[#0F1115]/80 border border-white/5 hover:border-white/15 transition-all duration-200 flex flex-col justify-between flex-1">
+            <div className="rounded-2xl p-7 bg-[#0F1115]/85 border border-white/10 hover:border-white/20 transition-all duration-200 flex flex-col justify-between flex-1">
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300">
+                  <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-brand">
                     <Video className="w-4 h-4" />
                   </div>
                   <span className="px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-mono text-zinc-400">
@@ -105,8 +129,21 @@ export const SitesOfferPackage: React.FC = () => {
                   {kitItem.description}
                 </p>
 
+                {/* Destaque Especial: Vídeo de até 30 segundos com Personagem 3D */}
+                <div className="mb-4 p-3.5 rounded-xl bg-brand/10 border border-brand/30 flex items-start gap-3">
+                  <PlayCircle className="w-5 h-5 text-brand shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs sm:text-sm font-semibold text-white leading-snug">
+                      Vídeo de até 30 segundos com personagem 3D
+                    </p>
+                    <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                      Produzido com roteiro persuasivo focado nos pontos fortes da sua empresa para apresentar e fixar no Instagram.
+                    </p>
+                  </div>
+                </div>
+
                 <ul className="space-y-2 text-xs text-zinc-300">
-                  {kitItem.features.map((f, i) => (
+                  {kitItem.features.slice(2).map((f, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <Check className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
                       <span className="leading-snug">{f}</span>
@@ -122,8 +159,8 @@ export const SitesOfferPackage: React.FC = () => {
               )}
             </div>
 
-            {/* Componente 03: BioPro 12 Meses */}
-            <div className="rounded-2xl p-7 bg-[#0F1115]/80 border border-white/5 hover:border-white/15 transition-all duration-200 flex flex-col justify-between flex-1">
+            {/* Componente 03: BioPro Link */}
+            <div className="rounded-2xl p-7 bg-[#0F1115]/85 border border-white/10 hover:border-white/20 transition-all duration-200 flex flex-col justify-between flex-1">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300">
@@ -154,13 +191,13 @@ export const SitesOfferPackage: React.FC = () => {
                 </ul>
               </div>
 
-              <div className="mt-4 pt-3 flex items-center justify-between text-xs text-zinc-400 border-t border-white/5">
-                <span>12 meses de acesso oficial incluídos</span>
+              <div className="mt-4 pt-3 flex items-center justify-between gap-2 text-xs text-zinc-300 border-t border-white/5">
+                <span className="font-medium">Acesso oficial incluído por 12 meses</span>
                 <a
                   href="https://bioprolink.com.br/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-zinc-300 hover:text-white transition-colors duration-150 font-medium"
+                  className="inline-flex items-center gap-1 text-zinc-300 hover:text-white transition-colors duration-150 font-medium shrink-0"
                 >
                   <span>Conhecer plataforma</span>
                   <ExternalLink className="w-3 h-3" />

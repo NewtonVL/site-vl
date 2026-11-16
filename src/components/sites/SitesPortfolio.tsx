@@ -26,16 +26,17 @@ export const SitesPortfolio: React.FC = () => {
           </p>
         </div>
 
-        {/* Abas em Segmented Control Minimalista */}
-        <div className="flex justify-start sm:justify-center mb-10 overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
-          <div className="inline-flex p-1 rounded-xl bg-[#0F1115] border border-white/5 max-w-full">
+        {/* Abas em Segmented Control Responsivo (todas as 5 visíveis no mobile e desktop) */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex flex-wrap justify-center gap-1.5 p-1.5 rounded-xl bg-[#0F1115] border border-white/5 max-w-full">
             {portfolio.items.map((item, idx) => {
               const isActive = idx === activeProjectIndex;
               return (
                 <button
                   key={item.id}
+                  type="button"
                   onClick={() => setActiveProjectIndex(idx)}
-                  className={`px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none ${
+                  className={`px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none ${
                     isActive
                       ? 'bg-white/10 text-white font-semibold shadow-sm'
                       : 'text-zinc-400 hover:text-white'

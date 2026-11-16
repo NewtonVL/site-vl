@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ShieldCheck, MessageCircle, Sparkles, TrendingUp } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -6,10 +6,25 @@ import { SITES_CONFIG } from '../../config/sitesLanding';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const MOBILE_TOTAL_FRAMES = 64;
+const SHEET_URLS = [
+  '/assets/posicionamento-sheet-1.webp',
+  '/assets/posicionamento-sheet-2.webp',
+  '/assets/posicionamento-sheet-3.webp',
+  '/assets/posicionamento-sheet-4.webp',
+];
+const FRAME_SIZE = 480;
+const SHEET_COLS = 4;
+const FRAMES_PER_SHEET = 16;
+
 export const SitesMoreThanASite: React.FC = () => {
   const { moreThanASite } = SITES_CONFIG;
   const sectionRef = useRef<HTMLElement>(null);
   const desktopVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileCanvasRef = useRef<HTMLCanvasElement>(null);
+  const sheetsRef = useRef<(HTMLImageElement | null)[]>([null, null, null, null]);
+  const lastDrawnFrameRef = useRef<number>(-1);
+  const currentProgressRef = useRef<number>(0);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const [isInView, setIsInView] = useState(false);
@@ -20,6 +35,7 @@ export const SitesMoreThanASite: React.FC = () => {
   const [saveData, setSaveData] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [mobileCanvasReady, setMobileCanvasReady] = useState(false);
   const [videoDuration, setVideoDuration] = useState(9.38);
 
   useEffect(() => {
@@ -66,11 +82,114 @@ export const SitesMoreThanASite: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  const shouldRenderVideo = isInView && !prefersReducedMotion && !saveData && !videoFailed;
+  const shouldRenderMedia = isInView && !prefersReducedMotion && !saveData && !videoFailed;
+
+  // Desenha um quadro específico no canvas mobile preservando object-cover e object-[62%_center]
+  const drawMobileFrame = useCallback((frameIndex: number, force = false) => {
+    const canvas = mobileCanvasRef.current;
+    if (!canvas) return;
+    const clamped = Math.min(MOBILE_TOTAL_FRAMES - 1, Math.max(0, frameIndex));
+    if (!force && lastDrawnFrameRef.current === clamped) return;
+
+    const sheetIdx = Math.floor(clamped / FRAMES_PER_SHEET);
+    const sheet = sheetsRef.current[sheetIdx];
+    if (!sheet || !sheet.complete || sheet.naturalWidth === 0) return;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    if (cw === 0 || ch === 0) return;
+
+    const targetW = Math.round(cw * dpr);
+    const targetH = Math.round(ch * dpr);
+    if (canvas.width !== targetW || canvas.height !== targetH) {
+      canvas.width = targetW;
+      canvas.height = targetH;
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const localIdx = clamped % FRAMES_PER_SHEET;
+    const sx = (localIdx % SHEET_COLS) * FRAME_SIZE;
+    const sy = Math.floor(localIdx / SHEET_COLS) * FRAME_SIZE;
+
+    // Simula object-cover object-[62%_center] em quadro 1:1
+    let destW: number;
+    let destH: number;
+    let destX: number;
+    let destY: number;
+
+    if (targetH >= targetW) {
+      destH = targetH;
+      destW = targetH;
+      destX = -(destW - targetW) * 0.62;
+      destY = 0;
+    } else {
+      destW = targetW;
+      destH = targetW;
+      destX = 0;
+      destY = -(destH - targetH) * 0.5;
+    }
+
+    ctx.clearRect(0, 0, targetW, targetH);
+    ctx.drawImage(sheet, sx, sy, FRAME_SIZE, FRAME_SIZE, destX, destY, destW, destH);
+    lastDrawnFrameRef.current = clamped;
+  }, []);
+
+  // Carregamento sob demanda dos 4 spritesheets WebP no mobile (~1.04 MB total)
+  useEffect(() => {
+    if (!shouldRenderMedia || isDesktopViewport) return;
+
+    let cancelled = false;
+    let failedCount = 0;
+
+    SHEET_URLS.forEach((url, idx) => {
+      if (sheetsRef.current[idx]) return;
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        if (cancelled) return;
+        sheetsRef.current[idx] = img;
+        if (idx === 0) {
+          setMobileCanvasReady(true);
+        }
+        const activeFrame = Math.min(
+          MOBILE_TOTAL_FRAMES - 1,
+          Math.max(0, Math.round(currentProgressRef.current * (MOBILE_TOTAL_FRAMES - 1)))
+        );
+        if (Math.floor(activeFrame / FRAMES_PER_SHEET) === idx || idx === 0) {
+          drawMobileFrame(activeFrame, true);
+        }
+      };
+      img.onerror = () => {
+        if (cancelled) return;
+        failedCount += 1;
+        if (failedCount === SHEET_URLS.length) {
+          setVideoFailed(true);
+        }
+      };
+      img.src = url;
+    });
+
+    const handleResize = () => {
+      const activeFrame = Math.min(
+        MOBILE_TOTAL_FRAMES - 1,
+        Math.max(0, Math.round(currentProgressRef.current * (MOBILE_TOTAL_FRAMES - 1)))
+      );
+      drawMobileFrame(activeFrame, true);
+    };
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [shouldRenderMedia, isDesktopViewport, drawMobileFrame]);
 
   // Narrativa controlada por GSAP ScrollTrigger com calibração distinta para Desktop e Mobile
   useEffect(() => {
-    // Caso haja movimento reduzido, economia de dados ou falha do vídeo, mantém todo o conteúdo visível em fluxo normal
+    // Caso haja movimento reduzido ou economia de dados, mantém todo o conteúdo visível em fluxo normal
     if (prefersReducedMotion || saveData) {
       cardsRef.current.forEach((card) => {
         if (card) {
@@ -89,11 +208,6 @@ export const SitesMoreThanASite: React.FC = () => {
 
       // DESKTOP (>= 1024px):
       // Pin de 100svh com duração proporcional à altura real da viewport (1.35x).
-      // Timeline normalizada em [0 .. 1]:
-      // - 0.00: Tese inicial visível com o início do vídeo
-      // - 0.06 -> 0.74: Entrada sequencial dos 4 benefícios com tempo de leitura entre cada um
-      // - 0.74 -> 1.00: Todos os 4 benefícios visíveis (platô de leitura antes de o vídeo e o pin terminarem)
-      // - 0.00 -> 0.92: Mapeamento suave do vídeo (evitando o fade final de loop)
       mm.add('(min-width: 1024px)', () => {
         const tl = gsap.timeline({
           scrollTrigger: {
@@ -107,9 +221,7 @@ export const SitesMoreThanASite: React.FC = () => {
             onUpdate: (self) => {
               const video = desktopVideoRef.current;
               if (!video || video.readyState < 2 || !videoDuration) return;
-              // Mapeia o progresso [0..1] para [0..94%] da duração do vídeo, evitando flash do fade final
               const targetTime = Math.min(videoDuration * 0.94, Math.max(0, self.progress * videoDuration * 0.94));
-              // Só solicita seek se não houver decodificação pendente e a diferença for perceptível
               if (!video.seeking && Math.abs(video.currentTime - targetTime) > 0.03) {
                 video.currentTime = targetTime;
               }
@@ -117,10 +229,8 @@ export const SitesMoreThanASite: React.FC = () => {
           },
         });
 
-        // Garante que a timeline tenha exatamente 1.0s de duração lógica para o mapeamento dos cards
         tl.to({}, { duration: 1 }, 0);
 
-        // Entrada sequencial dos 4 benefícios (todos visíveis em t = 0.74, antes do final em 1.0)
         const cardStarts = [0.06, 0.24, 0.42, 0.60];
         cardsRef.current.forEach((card, idx) => {
           if (!card) return;
@@ -140,10 +250,26 @@ export const SitesMoreThanASite: React.FC = () => {
       });
 
       // MOBILE (< 1024px):
-      // Sem pin na seção inteira (evita corte de cards em telas de 667px-844px e evita prender a rolagem).
-      // O vídeo de fundo permanece sticky em 100svh em reprodução contínua suave (sem engasgos de seek no iOS/Android),
-      // enquanto cada um dos 4 benefícios entra progressivamente conforme sua posição real na viewport.
+      // Scrubbing quadro-a-quadro em Canvas + Spritesheets WebP (60fps reais no iOS Safari e Chrome Android).
+      // Ao parar o dedo, o quadro permanece parado; ao voltar, os quadros recuam em sincronia exata.
+      // Os 4 benefícios entram progressivamente pela rolagem, calibrados pela altura real da tela.
       mm.add('(max-width: 1023px)', () => {
+        ScrollTrigger.create({
+          trigger: sectionRef.current,
+          start: 'top 65%',
+          end: 'bottom 85%',
+          scrub: true,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            currentProgressRef.current = self.progress;
+            const frameIdx = Math.min(
+              MOBILE_TOTAL_FRAMES - 1,
+              Math.max(0, Math.round(self.progress * (MOBILE_TOTAL_FRAMES - 1)))
+            );
+            drawMobileFrame(frameIdx);
+          },
+        });
+
         cardsRef.current.forEach((card) => {
           if (!card) return;
           gsap.fromTo(
@@ -168,7 +294,7 @@ export const SitesMoreThanASite: React.FC = () => {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [prefersReducedMotion, saveData, videoDuration]);
+  }, [prefersReducedMotion, saveData, videoDuration, drawMobileFrame]);
 
   const iconMap: Record<string, React.ReactNode> = {
     ShieldCheck: <ShieldCheck className="w-5 h-5 text-zinc-300 group-hover:text-brand transition-colors duration-200" />,
@@ -185,9 +311,9 @@ export const SitesMoreThanASite: React.FC = () => {
     >
       {/* 
         CENÁRIO ATMOSFÉRICO DE FUNDO (Z-0):
-        - Desktop: ocupa 100% da seção pinada, sincronizado via ScrollTrigger com arquivo intraframe.
-        - Mobile: wrapper sticky (top-0 h-[100svh]) acompanha o usuário durante toda a leitura natural dos cards,
-          com reprodução contínua suave (WebM/MP4 leve) para zero travamentos em iOS Safari e Chrome Android.
+        - Desktop: vídeo intraframe sincronizado via ScrollTrigger.
+        - Mobile: Canvas 60fps sobre spritesheets WebP sincronizado 1:1 com o gesto de rolagem
+          (para quando o usuário para, avança ao descer e recua ao subir, sem travar iOS/Android).
       */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none" aria-hidden="true">
         <div className="sticky top-0 h-[100svh] lg:h-full w-full overflow-hidden">
@@ -201,7 +327,7 @@ export const SitesMoreThanASite: React.FC = () => {
           />
 
           {/* Vídeo Desktop (scrubbing intraframe fluido) */}
-          {shouldRenderVideo && isDesktopViewport && (
+          {shouldRenderMedia && isDesktopViewport && (
             <video
               ref={desktopVideoRef}
               muted
@@ -224,25 +350,15 @@ export const SitesMoreThanASite: React.FC = () => {
             </video>
           )}
 
-          {/* Vídeo Mobile (reprodução contínua suave sem travamentos de seek em iOS/Android) */}
-          {shouldRenderVideo && !isDesktopViewport && (
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              onLoadedData={() => setVideoLoaded(true)}
-              onError={() => setVideoFailed(true)}
-              className={`absolute inset-0 w-full h-full object-cover object-[62%_center] filter blur-[1px] scale-105 z-[1] transition-opacity duration-700 ${
-                videoLoaded ? 'opacity-100' : 'opacity-0'
+          {/* Canvas Mobile (scrubbing frame-a-frame via spritesheets WebP, sem autoplay/loop) */}
+          {shouldRenderMedia && !isDesktopViewport && (
+            <canvas
+              ref={mobileCanvasRef}
+              className={`absolute inset-0 w-full h-full filter blur-[1px] scale-105 z-[1] transition-opacity duration-500 ${
+                mobileCanvasReady ? 'opacity-100' : 'opacity-0'
               }`}
               aria-hidden="true"
-              tabIndex={-1}
-            >
-              <source src="/assets/posicionamento-atmospheric.webm" type="video/webm" />
-              <source src="/assets/posicionamento-atmospheric.mp4" type="video/mp4" />
-            </video>
+            />
           )}
 
           {/* Camadas de Escurecimento e Conforto Visual */}
