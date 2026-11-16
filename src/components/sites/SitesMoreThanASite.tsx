@@ -9,35 +9,45 @@ gsap.registerPlugin(ScrollTrigger);
 export const SitesMoreThanASite: React.FC = () => {
   const { moreThanASite } = SITES_CONFIG;
   const sectionRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const [isInView, setIsInView] = useState(false);
+  const [isDesktopViewport, setIsDesktopViewport] = useState(() =>
+    typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)').matches : true
+  );
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [saveData, setSaveData] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoDuration, setVideoDuration] = useState(9.38);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-      setPrefersReducedMotion(motionQuery.matches);
-      const handleMotionChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
-      motionQuery.addEventListener('change', handleMotionChange);
+    if (typeof window === 'undefined') return;
 
-      // Verificação de economia de dados ou conexão lenta
-      const nav = navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } };
-      if (nav.connection?.saveData || nav.connection?.effectiveType === '2g' || nav.connection?.effectiveType === 'slow-2g') {
-        setSaveData(true);
-      }
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(motionQuery.matches);
+    const handleMotionChange = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    motionQuery.addEventListener('change', handleMotionChange);
 
-      return () => {
-        motionQuery.removeEventListener('change', handleMotionChange);
-      };
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+    setIsDesktopViewport(desktopQuery.matches);
+    const handleDesktopChange = (e: MediaQueryListEvent) => setIsDesktopViewport(e.matches);
+    desktopQuery.addEventListener('change', handleDesktopChange);
+
+    // Verificação de economia de dados ou conexão lenta
+    const nav = navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } };
+    if (nav.connection?.saveData || nav.connection?.effectiveType === '2g' || nav.connection?.effectiveType === 'slow-2g') {
+      setSaveData(true);
     }
+
+    return () => {
+      motionQuery.removeEventListener('change', handleMotionChange);
+      desktopQuery.removeEventListener('change', handleDesktopChange);
+    };
   }, []);
 
-  // IntersectionObserver para montagem e carregamento sob demanda
+  // IntersectionObserver para montagem e carregamento sob demanda (seção abaixo da Hero)
   useEffect(() => {
     if (!sectionRef.current) return;
     const observer = new IntersectionObserver(
@@ -56,14 +66,15 @@ export const SitesMoreThanASite: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  const shouldPlayVideo = isInView && !prefersReducedMotion && !saveData;
+  const shouldRenderVideo = isInView && !prefersReducedMotion && !saveData && !videoFailed;
 
-  // Narrativa controlada por ScrollTrigger (GSAP) usando gsap.context() nativo
+  // Narrativa controlada por GSAP ScrollTrigger com calibração distinta para Desktop e Mobile
   useEffect(() => {
-    // Caso haja preferência por movimento reduzido ou economia de dados, mantém o fluxo normal estático
+    // Caso haja movimento reduzido, economia de dados ou falha do vídeo, mantém todo o conteúdo visível em fluxo normal
     if (prefersReducedMotion || saveData) {
       cardsRef.current.forEach((card) => {
         if (card) {
+          gsap.set(card, { clearProps: 'all' });
           card.style.opacity = '1';
           card.style.transform = 'none';
         }
@@ -76,97 +87,88 @@ export const SitesMoreThanASite: React.FC = () => {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
-      // DESKTOP (>= 1024px): Narrativa com pin compacto e entrada progressiva dos 4 benefícios
+      // DESKTOP (>= 1024px):
+      // Pin de 100svh com duração proporcional à altura real da viewport (1.35x).
+      // Timeline normalizada em [0 .. 1]:
+      // - 0.00: Tese inicial visível com o início do vídeo
+      // - 0.06 -> 0.74: Entrada sequencial dos 4 benefícios com tempo de leitura entre cada um
+      // - 0.74 -> 1.00: Todos os 4 benefícios visíveis (platô de leitura antes de o vídeo e o pin terminarem)
+      // - 0.00 -> 0.92: Mapeamento suave do vídeo (evitando o fade final de loop)
       mm.add('(min-width: 1024px)', () => {
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: sectionRef.current,
             start: 'top top',
-            end: '+=850',
+            end: () => `+=${Math.round(window.innerHeight * 1.35)}`,
             pin: true,
-            scrub: 0.8,
+            scrub: 0.6,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              const video = desktopVideoRef.current;
+              if (!video || video.readyState < 2 || !videoDuration) return;
+              // Mapeia o progresso [0..1] para [0..94%] da duração do vídeo, evitando flash do fade final
+              const targetTime = Math.min(videoDuration * 0.94, Math.max(0, self.progress * videoDuration * 0.94));
+              // Só solicita seek se não houver decodificação pendente e a diferença for perceptível
+              if (!video.seeking && Math.abs(video.currentTime - targetTime) > 0.03) {
+                video.currentTime = targetTime;
+              }
+            },
           },
         });
 
-        // Sincronização do avanço e retorno do vídeo com a rolagem
-        if (videoRef.current) {
-          tl.to(
-            videoRef.current,
-            {
-              currentTime: videoDuration || 9.38,
-              ease: 'none',
-            },
-            0
-          );
-        }
+        // Garante que a timeline tenha exatamente 1.0s de duração lógica para o mapeamento dos cards
+        tl.to({}, { duration: 1 }, 0);
 
-        // Entrada progressiva dos 4 benefícios
+        // Entrada sequencial dos 4 benefícios (todos visíveis em t = 0.74, antes do final em 1.0)
+        const cardStarts = [0.06, 0.24, 0.42, 0.60];
         cardsRef.current.forEach((card, idx) => {
           if (!card) return;
-          gsap.set(card, { opacity: 0, y: 35, scale: 0.97 });
+          gsap.set(card, { opacity: 0, y: 28, scale: 0.98 });
           tl.to(
             card,
             {
               opacity: 1,
               y: 0,
               scale: 1,
-              duration: 0.22,
+              duration: 0.16,
               ease: 'power2.out',
             },
-            0.12 + idx * 0.2
+            cardStarts[idx] ?? 0.60
           );
         });
       });
 
-      // MOBILE (< 1024px): Pin leve e responsivo sem prender a rolagem do usuário
+      // MOBILE (< 1024px):
+      // Sem pin na seção inteira (evita corte de cards em telas de 667px-844px e evita prender a rolagem).
+      // O vídeo de fundo permanece sticky em 100svh em reprodução contínua suave (sem engasgos de seek no iOS/Android),
+      // enquanto cada um dos 4 benefícios entra progressivamente conforme sua posição real na viewport.
       mm.add('(max-width: 1023px)', () => {
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top top',
-            end: '+=700',
-            pin: true,
-            scrub: 0.7,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        // Sincronização do vídeo no mobile
-        if (videoRef.current) {
-          tl.to(
-            videoRef.current,
-            {
-              currentTime: videoDuration || 9.38,
-              ease: 'none',
-            },
-            0
-          );
-        }
-
-        // Entrada progressiva dos 4 benefícios no mobile
-        cardsRef.current.forEach((card, idx) => {
+        cardsRef.current.forEach((card) => {
           if (!card) return;
-          gsap.set(card, { opacity: 0, y: 30, scale: 0.98 });
-          tl.to(
+          gsap.fromTo(
             card,
+            { opacity: 0, y: 24, scale: 0.98 },
             {
               opacity: 1,
               y: 0,
               scale: 1,
-              duration: 0.22,
               ease: 'power2.out',
-            },
-            0.12 + idx * 0.2
+              scrollTrigger: {
+                trigger: card,
+                start: 'top 88%',
+                end: 'top 54%',
+                scrub: 0.45,
+                invalidateOnRefresh: true,
+              },
+            }
           );
         });
       });
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [prefersReducedMotion, saveData, videoLoaded, videoDuration]);
+  }, [prefersReducedMotion, saveData, videoDuration]);
 
   const iconMap: Record<string, React.ReactNode> = {
     ShieldCheck: <ShieldCheck className="w-5 h-5 text-zinc-300 group-hover:text-brand transition-colors duration-200" />,
@@ -179,65 +181,83 @@ export const SitesMoreThanASite: React.FC = () => {
     <section
       id="posicionamento"
       ref={sectionRef}
-      className="relative min-h-screen py-16 lg:py-24 bg-[#07080A] text-white border-t border-white/5 overflow-hidden flex flex-col justify-center"
+      className="relative lg:min-h-[100svh] py-16 sm:py-20 lg:py-24 bg-[#07080A] text-white border-t border-white/5 overflow-x-clip flex flex-col justify-center"
     >
       {/* 
         CENÁRIO ATMOSFÉRICO DE FUNDO (Z-0):
-        Vídeo em loop contínuo e silencioso, suavizado com blur e escurecido para subordinar
-        elementos internos ao conteúdo editorial HTML.
+        - Desktop: ocupa 100% da seção pinada, sincronizado via ScrollTrigger com arquivo intraframe.
+        - Mobile: wrapper sticky (top-0 h-[100svh]) acompanha o usuário durante toda a leitura natural dos cards,
+          com reprodução contínua suave (WebM/MP4 leve) para zero travamentos em iOS Safari e Chrome Android.
       */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
-        {/* Poster estático WebP: sempre carregado primeiro para evitar tela preta em qualquer estado */}
-        <img
-          src="/assets/posicionamento-poster.webp"
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover object-center filter blur-[2px] lg:blur-[1.5px] scale-105 z-0 opacity-80 lg:opacity-100"
-          loading="lazy"
-          decoding="async"
-        />
+      <div className="absolute inset-0 z-0 pointer-events-none select-none" aria-hidden="true">
+        <div className="sticky top-0 h-[100svh] lg:h-full w-full overflow-hidden">
+          {/* Poster estático WebP: sempre carregado primeiro para evitar tela preta em qualquer estado */}
+          <img
+            src="/assets/posicionamento-poster.webp"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover object-center filter blur-[2px] lg:blur-[1.5px] scale-105 z-0 opacity-75 lg:opacity-100"
+            loading="lazy"
+            decoding="async"
+          />
 
-        {/* Vídeo atmosférico diferido: sincronizado via GSAP ScrollTrigger com arquivo intraframe otimizado */}
-        {shouldPlayVideo && (
-          <video
-            ref={videoRef}
-            muted
-            playsInline
-            preload="auto"
-            onLoadedMetadata={(e) => {
-              if (e.currentTarget.duration) {
-                setVideoDuration(e.currentTarget.duration);
-              }
-            }}
-            onLoadedData={() => setVideoLoaded(true)}
-            className={`absolute inset-0 w-full h-full object-cover object-center filter blur-[2px] lg:blur-[1.5px] scale-105 z-[1] transition-opacity duration-1000 ${
-              videoLoaded ? 'opacity-80 lg:opacity-100' : 'opacity-0'
-            }`}
-            aria-hidden="true"
-            tabIndex={-1}
-          >
-            <source src="/assets/posicionamento-scrub.mp4" type="video/mp4" />
-            <source src="/assets/posicionamento-atmospheric.webm" type="video/webm" />
-          </video>
-        )}
+          {/* Vídeo Desktop (scrubbing intraframe fluido) */}
+          {shouldRenderVideo && isDesktopViewport && (
+            <video
+              ref={desktopVideoRef}
+              muted
+              playsInline
+              preload="auto"
+              onLoadedMetadata={(e) => {
+                if (e.currentTarget.duration) {
+                  setVideoDuration(e.currentTarget.duration);
+                }
+              }}
+              onLoadedData={() => setVideoLoaded(true)}
+              onError={() => setVideoFailed(true)}
+              className={`absolute inset-0 w-full h-full object-cover object-center filter blur-[1.5px] scale-105 z-[1] transition-opacity duration-700 ${
+                videoLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+              aria-hidden="true"
+              tabIndex={-1}
+            >
+              <source src="/assets/posicionamento-scrub.mp4" type="video/mp4" />
+            </video>
+          )}
 
-        {/* 
-          Camadas de Escurecimento e Conforto Visual:
-          - Desktop: Gradiente horizontal que aprofunda o preto no bloco de texto (coluna esquerda)
-            e permite que o brilho arquitetônico respire suavemente no lado direito.
-          - Mobile: Gradiente vertical profundo com maior opacidade e desfoque aveludado,
-            subordinando rostos, roupas e mockups para que a atenção fique 100% no texto HTML.
-        */}
-        <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#07080A]/95 via-[#07080A]/85 to-[#07080A]/75 backdrop-blur-[1px] z-[2]" />
-        <div className="block lg:hidden absolute inset-0 bg-gradient-to-b from-[#07080A]/98 via-[#07080A]/92 to-[#07080A]/96 backdrop-blur-[2px] z-[2]" />
-        
-        {/* Vinhetas superior e inferior para transição suave com as seções adjacentes */}
-        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#090A0C] via-[#090A0C]/80 to-transparent z-[3]" />
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#090A0C] via-[#090A0C]/80 to-transparent z-[3]" />
+          {/* Vídeo Mobile (reprodução contínua suave sem travamentos de seek em iOS/Android) */}
+          {shouldRenderVideo && !isDesktopViewport && (
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              onLoadedData={() => setVideoLoaded(true)}
+              onError={() => setVideoFailed(true)}
+              className={`absolute inset-0 w-full h-full object-cover object-center filter blur-[2px] scale-105 z-[1] transition-opacity duration-700 ${
+                videoLoaded ? 'opacity-75' : 'opacity-0'
+              }`}
+              aria-hidden="true"
+              tabIndex={-1}
+            >
+              <source src="/assets/posicionamento-atmospheric.webm" type="video/webm" />
+              <source src="/assets/posicionamento-atmospheric.mp4" type="video/mp4" />
+            </video>
+          )}
+
+          {/* Camadas de Escurecimento e Conforto Visual */}
+          <div className="hidden lg:block absolute inset-0 bg-gradient-to-r from-[#07080A]/95 via-[#07080A]/85 to-[#07080A]/75 backdrop-blur-[1px] z-[2]" />
+          <div className="block lg:hidden absolute inset-0 bg-gradient-to-b from-[#07080A]/95 via-[#07080A]/90 to-[#07080A]/95 backdrop-blur-[2px] z-[2]" />
+
+          {/* Vinhetas superior e inferior para transição suave com as seções adjacentes */}
+          <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#090A0C] via-[#090A0C]/80 to-transparent z-[3]" />
+          <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#090A0C] via-[#090A0C]/80 to-transparent z-[3]" />
+        </div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full my-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
-          {/* Coluna Editorial Esquerda: Tese e Autoridade */}
+          {/* Coluna Editorial Esquerda: Tese e Autoridade (visível desde o início) */}
           <div className="lg:col-span-5 space-y-5 text-left">
             <span className="text-xs font-semibold tracking-wider uppercase text-zinc-400 block">
               Posicionamento de Mercado
@@ -253,7 +273,7 @@ export const SitesMoreThanASite: React.FC = () => {
             </p>
 
             {/* Escudo de Contraste Dedicado para o Bloco de Autoridade */}
-            <div className="p-4 sm:p-5 rounded-xl bg-[#090B0E]/80 backdrop-blur-md border border-white/10 border-l-2 border-l-brand space-y-1.5 shadow-lg">
+            <div className="p-4 sm:p-5 rounded-xl bg-[#090B0E]/90 lg:bg-[#090B0E]/85 backdrop-blur-md border border-white/10 border-l-2 border-l-brand space-y-1.5 shadow-lg">
               <span className="text-xs font-semibold text-white block uppercase tracking-wider">
                 Posicionamento que gera resultados:
               </span>
@@ -271,7 +291,7 @@ export const SitesMoreThanASite: React.FC = () => {
                 ref={(el) => {
                   cardsRef.current[idx] = el;
                 }}
-                className="benefit-card p-5 sm:p-6 rounded-2xl bg-[#090B0E]/85 sm:bg-[#090B0E]/75 backdrop-blur-md border border-white/10 space-y-3 shadow-xl transition-all duration-300 hover:border-brand/40 hover:bg-[#090B0E]/95 group"
+                className="benefit-card p-5 sm:p-6 rounded-2xl bg-[#090B0E]/90 sm:bg-[#090B0E]/85 backdrop-blur-md border border-white/10 space-y-3 shadow-xl transition-colors duration-300 hover:border-brand/40 hover:bg-[#090B0E]/95 group"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:border-brand/40 group-hover:bg-brand/10 transition-all duration-200">
