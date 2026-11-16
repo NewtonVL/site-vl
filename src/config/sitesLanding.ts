@@ -249,6 +249,20 @@ export const SITES_CONFIG = {
         highlights: ["Modelagem 3D", "Animação com IA", "Engajamento Visual"],
         badge: "Ecossistema Criativo",
       },
+      {
+        id: "newneo",
+        name: "NEWNEO",
+        category: "Referência Institucional do Ecossistema",
+        tagline: "Sistemas Web, Apps PWA, IA & Experiência 3D",
+        description:
+          "Hub de tecnologia e engenharia digital responsável pelo desenvolvimento dos websites, combinando sistemas web, aplicativos PWA, inteligência artificial e experiências interativas 3D.",
+        url: "https://newneo.com.br/",
+        image: "/assets/portfolio/newneo.webp",
+        natureText: "Referência institucional do ecossistema tecnológico parceiro da Vitrine Local",
+        highlights: ["Sistemas Web & SaaS", "Apps PWA & IA Generativa", "Showroom Interativo 3D"],
+        badge: "Ecossistema Tecnológico",
+        ctaText: "Conhecer a NEWNEO",
+      },
     ],
   },
 

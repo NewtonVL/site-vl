@@ -26,9 +26,9 @@ export const SitesPortfolio: React.FC = () => {
           </p>
         </div>
 
-        {/* Abas em Segmented Control Responsivo (todas as 5 visíveis no mobile e desktop) */}
+        {/* Abas em Segmented Control Responsivo (6 opções: grade 2x3 simétrica no mobile e barra única no desktop) */}
         <div className="flex justify-center mb-10">
-          <div className="inline-flex flex-wrap justify-center gap-1.5 p-1.5 rounded-xl bg-[#0F1115] border border-white/5 max-w-full">
+          <div className="grid grid-cols-2 sm:inline-flex sm:flex-wrap sm:justify-center gap-1.5 p-1.5 rounded-xl bg-[#0F1115] border border-white/5 w-full sm:w-auto max-w-full">
             {portfolio.items.map((item, idx) => {
               const isActive = idx === activeProjectIndex;
               return (
@@ -36,7 +36,7 @@ export const SitesPortfolio: React.FC = () => {
                   key={item.id}
                   type="button"
                   onClick={() => setActiveProjectIndex(idx)}
-                  className={`px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none ${
+                  className={`px-3 sm:px-4 py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm text-center whitespace-nowrap transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none ${
                     isActive
                       ? 'bg-white/10 text-white font-semibold shadow-sm'
                       : 'text-zinc-400 hover:text-white'
@@ -140,7 +140,7 @@ export const SitesPortfolio: React.FC = () => {
                     rel="noopener noreferrer"
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold text-white bg-brand hover:bg-brand-600 shadow-orange-glow transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand focus-visible:outline-none"
                   >
-                    <span>Ver demonstração ao vivo</span>
+                    <span>{(activeProject as { ctaText?: string }).ctaText || 'Ver demonstração ao vivo'}</span>
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>
