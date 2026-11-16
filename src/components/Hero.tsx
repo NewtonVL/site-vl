@@ -6,48 +6,48 @@ export const Hero: React.FC = () => {
   return (
     <section
       id="inicio"
-      className="relative pt-6 pb-8 sm:pt-10 sm:pb-10 lg:pt-12 lg:pb-12 bg-gradient-to-b from-white via-zinc-50/40 to-white overflow-hidden"
+      className="relative py-20 sm:py-28 lg:py-32 bg-[#07080A] text-white overflow-hidden border-b border-white/5"
     >
-      {/* Subtle background ambient light */}
+      {/* Luz ambiente sutil de profundidade */}
       <div
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[250px] bg-brand-50/40 rounded-full blur-3xl pointer-events-none -z-10"
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[280px] bg-brand/12 rounded-full blur-[160px] pointer-events-none"
         aria-hidden="true"
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
-          {/* Institutional Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100/90 border border-zinc-200/80 text-zinc-700 text-xs sm:text-sm font-semibold tracking-wide uppercase mb-3.5 sm:mb-5 transition-transform hover:scale-[1.02]">
-            <span className="w-2 h-2 rounded-full bg-brand animate-pulse" />
+          {/* Overline Editorial Discreto (sem pílula pesada) */}
+          <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-zinc-400 mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand shrink-0" aria-hidden="true" />
             <span>{siteConfig.brand.institutionalTag}</span>
           </div>
 
-          {/* Exact Hero Title */}
-          <h1 className="text-3xl sm:text-5xl lg:text-5xl font-extrabold text-zinc-900 tracking-tight leading-[1.18] mb-3.5 sm:mb-5">
+          {/* Headline com contraste editorial */}
+          <h1 className="text-3xl sm:text-5xl lg:text-[3.4rem] font-extrabold text-white tracking-[-0.025em] leading-[1.12] [text-wrap:balance] mb-5">
             Conectando pessoas, negócios{' '}
             <span className="text-brand inline-block">
               e oportunidades.
             </span>
           </h1>
 
-          {/* Exact Hero Subtitle */}
-          <p className="text-base sm:text-lg lg:text-xl text-zinc-600 font-normal leading-relaxed mb-6 sm:mb-7 max-w-2xl mx-auto">
+          {/* Subtítulo */}
+          <p className="text-base sm:text-xl text-zinc-300 font-normal leading-relaxed mb-9 max-w-2xl mx-auto [text-wrap:pretty]">
             {siteConfig.hero.subtitle}
           </p>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          {/* Ações */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4">
             <a
               href={siteConfig.hero.primaryCta.href}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl text-base font-semibold text-white bg-brand hover:bg-brand-600 shadow-orange-glow hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl text-sm sm:text-base font-bold text-white bg-brand hover:bg-brand-600 shadow-orange-glow transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-[#07080A] group"
             >
               <span>{siteConfig.hero.primaryCta.text}</span>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
             </a>
 
             <a
               href={siteConfig.hero.secondaryCta.href}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-base font-medium text-zinc-700 bg-white hover:bg-zinc-50 border border-zinc-200 hover:border-zinc-300 transition-all duration-200"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm sm:text-base font-semibold text-zinc-200 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/25 transition-all duration-200 focus-visible:ring-2 focus-visible:ring-brand focus-visible:outline-none"
             >
               <span>{siteConfig.hero.secondaryCta.text}</span>
             </a>

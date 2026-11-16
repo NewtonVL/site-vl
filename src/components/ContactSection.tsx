@@ -11,86 +11,80 @@ export const ContactSection: React.FC = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      // Fallback for environments without clipboard permissions
       setCopied(false);
     }
   };
 
   return (
-    <section id="contato" className="py-16 sm:py-24 bg-white border-t border-zinc-200/60">
+    <section id="contato" className="py-20 sm:py-28 bg-[#090A0C] text-white border-b border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         {/* Fechamento Institucional */}
-        <div className="max-w-4xl mx-auto text-center mb-14 sm:mb-16">
-          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-brand-50 border border-brand-100 mb-5">
-            <span className="w-2.5 h-2.5 rounded-full bg-brand" />
-          </div>
+        <div className="max-w-3xl mx-auto text-center mb-14 sm:mb-16">
+          <span className="inline-block w-2 h-2 rounded-full bg-brand mb-6" aria-hidden="true" />
 
-          <blockquote className="text-2xl sm:text-4xl lg:text-4xl font-extrabold text-zinc-900 tracking-tight leading-tight mb-3">
-            “{siteConfig.closing.quote}”
+          <blockquote className="text-2xl sm:text-4xl font-bold text-white tracking-tight leading-[1.2] [text-wrap:balance] mb-4">
+            “O local ganha força{' '}
+            <span className="font-light text-zinc-400">quando as pessoas se conectam.</span>”
           </blockquote>
-          
-          <p className="text-base sm:text-lg text-zinc-500 max-w-2xl mx-auto">
+
+          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto">
             Aproximar pessoas e negócios locais fortalece toda a comunidade.
           </p>
         </div>
 
-        {/* Seção de Contato Institucional */}
+        {/* Cartão de Contato Institucional */}
         <div className="max-w-2xl mx-auto">
-          <div className="relative bg-zinc-50 border border-zinc-200 rounded-3xl p-7 sm:p-10 shadow-card text-center">
-            
-            <div className="w-12 h-12 rounded-2xl bg-brand/10 border border-brand/20 text-brand flex items-center justify-center mx-auto mb-5">
-              <Mail className="w-6 h-6" />
+          <div className="relative bg-[#0F1115] border border-white/10 rounded-3xl p-7 sm:p-10 shadow-2xl text-center">
+            <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 text-brand flex items-center justify-center mx-auto mb-5">
+              <Mail className="w-5 h-5" />
             </div>
 
-            <h3 className="text-xl sm:text-2xl font-bold text-zinc-900 mb-2">
+            <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
               {siteConfig.contact.label}
             </h3>
 
-            <p className="text-sm sm:text-base text-zinc-600 mb-7 max-w-md mx-auto">
+            <p className="text-sm sm:text-base text-zinc-400 mb-7 max-w-md mx-auto">
               {siteConfig.contact.helpText}
             </p>
 
-            {/* Email display and actions */}
-            <div className="bg-white border border-zinc-200/90 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
-              <div className="text-left w-full sm:w-auto">
-                <span className="block text-xs uppercase tracking-wider text-zinc-400 font-semibold mb-1">
+            {/* E-mail oficial e ações */}
+            <div className="bg-[#07080A] border border-white/10 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-left w-full sm:w-auto min-w-0">
+                <span className="block font-mono text-[11px] uppercase tracking-wider text-zinc-500 font-semibold mb-1">
                   E-mail oficial
                 </span>
                 <a
                   href={`mailto:${siteConfig.contact.email}`}
-                  className="text-base sm:text-lg font-bold text-brand hover:text-brand-600 transition-colors break-all"
+                  className="text-sm sm:text-base font-semibold text-white hover:text-brand transition-colors break-all"
                 >
                   {siteConfig.contact.email}
                 </a>
               </div>
 
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                {/* Mailto button */}
+              <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
                 <a
                   href={`mailto:${siteConfig.contact.email}`}
-                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-brand text-white text-sm font-semibold hover:bg-brand-600 transition-colors shadow-sm"
+                  className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-brand text-white text-xs sm:text-sm font-bold hover:bg-brand-600 transition-colors shadow-orange-glow whitespace-nowrap"
                   aria-label={`Enviar e-mail para ${siteConfig.contact.email}`}
                 >
                   <span>Enviar e-mail</span>
                   <ArrowUpRight className="w-4 h-4" />
                 </a>
 
-                {/* Copy button */}
                 <button
                   type="button"
                   onClick={handleCopyEmail}
-                  className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-sm font-medium transition-all ${
+                  className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                     copied
-                      ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
-                      : 'bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-300'
+                      ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
+                      : 'bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white'
                   }`}
                   aria-label="Copiar endereço de e-mail"
                   title="Copiar endereço"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-4 h-4 text-emerald-600" />
+                      <Check className="w-4 h-4" />
                       <span className="hidden sm:inline">Copiado</span>
                     </>
                   ) : (
@@ -104,13 +98,12 @@ export const ContactSection: React.FC = () => {
             </div>
 
             {copied && (
-              <p className="mt-3 text-xs font-semibold text-emerald-600 animate-in fade-in duration-200">
+              <p className="mt-3 text-xs font-semibold text-emerald-400">
                 Endereço copiado para a área de transferência!
               </p>
             )}
           </div>
         </div>
-
       </div>
     </section>
   );

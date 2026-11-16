@@ -11,9 +11,9 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="bg-zinc-950 text-white border-t border-zinc-900 pt-16 pb-12">
+    <footer className="bg-[#07080A] text-zinc-400 border-t border-white/5 pt-16 pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10 pb-12 border-b border-zinc-800/80">
+        <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-10 pb-12 border-b border-white/5">
           
           {/* Brand Info & White Logo */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left max-w-sm">
@@ -76,7 +76,7 @@ export const Footer: React.FC = () => {
             <button
               type="button"
               onClick={scrollToTop}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-800 transition-colors text-xs font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white border border-white/10 transition-colors text-xs font-semibold"
               aria-label="Voltar ao topo da página"
             >
               <span>Voltar ao topo</span>

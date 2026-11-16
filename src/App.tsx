@@ -44,9 +44,9 @@ export function App() {
     return <BenefitsPage onNavigateHome={() => navigate('/')} />;
   }
 
-  // Site Institucional Principal (100% preservado)
+  // Site Institucional Principal (Direção Visual Unificada)
   return (
-    <div className="min-h-screen flex flex-col bg-white text-zinc-900 selection:bg-brand-100 selection:text-brand-900">
+    <div className="min-h-screen flex flex-col bg-[#07080A] text-white selection:bg-brand/30 selection:text-white antialiased">
       {/* Sticky Institutional Header */}
       <Header />
 
