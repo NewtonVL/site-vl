@@ -7,6 +7,7 @@ import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { BenefitsPage } from './components/BenefitsPage';
 import { SitesLandingPage } from './components/SitesLandingPage';
+import { SitesContractingPage } from './components/sites/SitesContractingPage';
 
 export function App() {
   const [currentPath, setCurrentPath] = useState(() => {
@@ -37,6 +38,11 @@ export function App() {
   // Rota da Landing Page Premium de Sites (Ativada para implementação e testes)
   if (currentPath === '/sites') {
     return <SitesLandingPage onNavigateHome={() => navigate('/')} />;
+  }
+
+  // Rota do Fluxo de Proposta e Contratação Individual (/sites/contratar)
+  if (currentPath === '/sites/contratar' || currentPath === '/sites/proposta') {
+    return <SitesContractingPage onNavigateSites={() => navigate('/sites')} />;
   }
 
   // Rota de Benefícios Exclusivos (White Label)
