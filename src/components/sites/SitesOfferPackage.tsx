@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, Video, Link2, Check, ExternalLink, ShieldCheck, ArrowRight, PlayCircle, Gift } from 'lucide-react';
+import { Globe, Server, Video, Link2, Check, ExternalLink, ShieldCheck, ArrowRight, PlayCircle, Gift } from 'lucide-react';
 import { SITES_CONFIG } from '../../config/sitesLanding';
 
 export const SitesOfferPackage: React.FC = () => {
@@ -96,6 +96,21 @@ export const SitesOfferPackage: React.FC = () => {
                       <span className="leading-snug">{feature}</span>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Benefício de infraestrutura incluído no primeiro ano */}
+              <div className="mt-8 flex items-start gap-3.5 rounded-xl border border-brand/25 bg-brand/5 p-4 sm:p-5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand/25 bg-brand/10 text-brand">
+                  <Server className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div>
+                  <p className="text-xs sm:text-sm font-semibold uppercase tracking-wide text-white leading-snug">
+                    DOMÍNIO + HOSPEDAGEM INCLUÍDOS POR 12 MESES
+                  </p>
+                  <p className="mt-2 text-xs sm:text-sm leading-relaxed text-zinc-300">
+                    Seu site com endereço próprio e hospedagem profissional durante o primeiro ano, conforme as condições de contratação.
+                  </p>
                 </div>
               </div>
             </div>
