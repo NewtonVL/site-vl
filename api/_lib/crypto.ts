@@ -75,7 +75,7 @@ export function verifyMercadoPagoWebhookSignature(params: {
 
   const buildManifest = (idValue?: string): string => {
     const segments: string[] = [];
-    if (idValue) segments.push(`id:${idValue.toLowerCase()}`);
+    if (idValue) segments.push(`id:${idValue}`);
     if (xRequestId) segments.push(`request-id:${xRequestId}`);
     segments.push(`ts:${ts}`);
     return `${segments.join(';')};`;
