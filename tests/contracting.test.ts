@@ -1044,9 +1044,35 @@ test('Checkout Pro via Orders API: valida MP_TEST_ACCOUNT_ID antes de POST /v1/o
     assert.equal(capturedOrderBody.type, 'online');
     assert.equal(capturedOrderBody.processing_mode, 'manual');
     assert.equal(capturedOrderBody.total_amount, '1992.00');
+    assert.equal(capturedOrderBody.back_urls, undefined);
+    assert.equal(capturedOrderBody.auto_return, undefined);
+    const onlineConfig = (capturedOrderBody.config as { online?: Record<string, string> } | undefined)?.online;
+    assert.ok(onlineConfig?.success_url?.includes('mp_status=success'));
+    assert.ok(onlineConfig?.pending_url?.includes('mp_status=pending'));
+    assert.ok(onlineConfig?.failure_url?.includes('mp_status=failure'));
+    assert.equal(onlineConfig?.auto_return, 'approved');
     assert.ok(capturedOrderHeaders['X-Idempotency-Key']);
     assert.equal(savedOrders.length, 1);
     assert.equal(savedOrders[0].order_id, 'ORD01TEST123');
+
+    // 6. Erro 400 do Mercado Pago com array errors[] -> extrai code/message sem expor token
+    globalThis.fetch = (async (input) => {
+      if (String(input).endsWith('/users/me')) {
+        return new Response(JSON.stringify({ id: 12345, tags: ['normal'] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      return new Response(
+        JSON.stringify({
+          errors: [{ code: 'invalid_property', message: 'property back_urls is invalid' }],
+        }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+      );
+    }) as typeof fetch;
+    const resMp400 = await callCreateOrder();
+    assert.equal(resMp400.getStatus(), 502);
+    assert.ok(String(resMp400.getJson().detail).includes('invalid_property'));
   } finally {
     __setPersistenceAdapterForTests(null);
     globalThis.fetch = prevFetch;

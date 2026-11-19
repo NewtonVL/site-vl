@@ -225,7 +225,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       expiration_time: 'P1D',
       items: [
         {
-          id: proposal.id,
+          external_code: proposal.id,
           title: `Solução Vitrine Local /sites — Proposta ${proposal.id}`,
           description:
             receipt.paymentMethod === 'pix'
@@ -236,12 +236,14 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
         },
       ],
       payer: body.payerEmail ? { email: body.payerEmail } : undefined,
-      back_urls: {
-        success: `${baseUrl}/sites/contratar?proposta=${encodeURIComponent(proposal.id)}&mp_status=success`,
-        pending: `${baseUrl}/sites/contratar?proposta=${encodeURIComponent(proposal.id)}&mp_status=pending`,
-        failure: `${baseUrl}/sites/contratar?proposta=${encodeURIComponent(proposal.id)}&mp_status=failure`,
+      config: {
+        online: {
+          success_url: `${baseUrl}/sites/contratar?proposta=${encodeURIComponent(proposal.id)}&mp_status=success`,
+          pending_url: `${baseUrl}/sites/contratar?proposta=${encodeURIComponent(proposal.id)}&mp_status=pending`,
+          failure_url: `${baseUrl}/sites/contratar?proposta=${encodeURIComponent(proposal.id)}&mp_status=failure`,
+          auto_return: 'approved',
+        },
       },
-      auto_return: 'approved',
     };
 
     if (!mpToken) {
@@ -283,27 +285,36 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       body: JSON.stringify(orderPayload),
     });
 
-    const mpData = (await mpResponse.json()) as {
+    const mpData = (await mpResponse.json().catch(() => ({}))) as {
       id?: string;
       status?: string;
       live_mode?: boolean;
       checkout_url?: string;
       message?: string;
+      errors?: Array<{ code?: string; message?: string; details?: string[] }>;
     };
 
     if (!mpResponse.ok || !mpData.id || !mpData.checkout_url) {
+      const firstErr = Array.isArray(mpData.errors) ? mpData.errors[0] : undefined;
+      const safeDetail = firstErr
+        ? [firstErr.code, firstErr.message, ...(firstErr.details || [])]
+            .filter(Boolean)
+            .join(' | ')
+            .slice(0, 200)
+        : (mpData.message || 'Unknown error').slice(0, 200);
       console.error('[MP_CREATE_ORDER_UPSTREAM_ERROR]', {
         status: mpResponse.status,
         hasId: Boolean(mpData.id),
         hasCheckoutUrl: Boolean(mpData.checkout_url),
-        detail: (mpData.message || 'Unknown error').slice(0, 200),
+        errorCount: Array.isArray(mpData.errors) ? mpData.errors.length : 0,
+        detail: safeDetail,
       });
       res.statusCode = 502;
       res.setHeader('Content-Type', 'application/json');
       res.end(
         JSON.stringify({
           error: 'Falha ao criar Order Checkout Pro no Mercado Pago.',
-          detail: mpData.message || 'Unknown error',
+          detail: safeDetail || 'Unknown error',
         }),
       );
       return;
