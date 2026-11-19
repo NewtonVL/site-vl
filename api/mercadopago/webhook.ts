@@ -111,22 +111,34 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   try {
     const url = new URL(req.url || '/', 'http://localhost');
     const body = await readJsonBody<WebhookBody>(req);
-    const dataId =
-      url.searchParams.get('data.id') ||
-      (body.data?.id !== undefined ? String(body.data.id) : undefined);
+    const queryDataId = url.searchParams.get('data.id')?.trim() || undefined;
+    const bodyDataId = body.data?.id !== undefined ? String(body.data.id).trim() || undefined : undefined;
+    const dataId = queryDataId || bodyDataId;
 
-    const xSignature = req.headers['x-signature'] as string | undefined;
-    const xRequestId = req.headers['x-request-id'] as string | undefined;
-    const webhookSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+    const rawXSignature = req.headers['x-signature'];
+    const rawXRequestId = req.headers['x-request-id'];
+    const xSignature = Array.isArray(rawXSignature) ? rawXSignature[0] : rawXSignature;
+    const xRequestId = Array.isArray(rawXRequestId) ? rawXRequestId[0] : rawXRequestId;
+    const webhookSecret = process.env.MERCADOPAGO_WEBHOOK_SECRET?.trim();
 
     if (
       !verifyMercadoPagoWebhookSignature({
         xSignature,
         xRequestId,
         dataId,
+        queryDataId,
+        bodyDataId,
         secret: webhookSecret,
       })
     ) {
+      console.warn('[MP_WEBHOOK_401]', {
+        hasSecret: Boolean(webhookSecret),
+        hasXSignature: Boolean(xSignature),
+        hasXRequestId: Boolean(xRequestId),
+        hasQueryDataId: Boolean(queryDataId),
+        hasBodyDataId: Boolean(bodyDataId),
+        topic: url.searchParams.get('type') || body.type || null,
+      });
       res.statusCode = 401;
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({ error: 'Assinatura x-signature inválida ou ausente.' }));

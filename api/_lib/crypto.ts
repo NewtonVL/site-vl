@@ -35,23 +35,27 @@ export function verifyAcceptanceSignature(payload: string, signatureHex: string)
 /**
  * Valida o cabeçalho x-signature enviado pelo Mercado Pago nos webhooks.
  * Formato esperado: "ts=1704908010,v1=..."
- * Manifest: "id:[data.id];request-id:[x-request-id];ts:[ts];"
+ * Manifest oficial: omite campos ausentes, ex.: "id:[data.id];request-id:[x-request-id];ts:[ts];"
  */
 export function verifyMercadoPagoWebhookSignature(params: {
   xSignature: string | undefined;
   xRequestId: string | undefined;
   dataId: string | undefined;
+  queryDataId?: string | undefined;
+  bodyDataId?: string | undefined;
   secret: string | undefined;
 }): boolean {
-  const { xSignature, xRequestId, dataId, secret } = params;
-  if (!xSignature || !xRequestId || !dataId || !secret) {
+  const { xSignature, xRequestId, dataId, queryDataId, bodyDataId } = params;
+  const secret = params.secret?.trim();
+  if (!xSignature || !secret) {
     return false;
   }
 
   const parts = Object.fromEntries(
     xSignature.split(',').map((segment) => {
-      const [k, v] = segment.split('=');
-      return [k?.trim(), v?.trim()];
+      const eqIdx = segment.indexOf('=');
+      if (eqIdx === -1) return [segment.trim(), ''];
+      return [segment.slice(0, eqIdx).trim(), segment.slice(eqIdx + 1).trim()];
     }),
   );
 
@@ -61,11 +65,32 @@ export function verifyMercadoPagoWebhookSignature(params: {
     return false;
   }
 
-  const manifest = `id:${dataId.toLowerCase()};request-id:${xRequestId};ts:${ts};`;
-  const computed = createHmac('sha256', secret).update(manifest).digest('hex');
+  const checkManifest = (manifest: string): boolean => {
+    const computed = createHmac('sha256', secret).update(manifest).digest('hex');
+    const a = Buffer.from(computed, 'hex');
+    const b = Buffer.from(v1, 'hex');
+    if (a.length !== b.length) return false;
+    return timingSafeEqual(a, b);
+  };
 
-  const a = Buffer.from(computed, 'hex');
-  const b = Buffer.from(v1, 'hex');
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
+  const buildManifest = (idValue?: string): string => {
+    const segments: string[] = [];
+    if (idValue) segments.push(`id:${idValue.toLowerCase()}`);
+    if (xRequestId) segments.push(`request-id:${xRequestId}`);
+    segments.push(`ts:${ts}`);
+    return `${segments.join(';')};`;
+  };
+
+  const primaryId = queryDataId !== undefined ? queryDataId : bodyDataId !== undefined ? undefined : dataId;
+  if (checkManifest(buildManifest(primaryId))) {
+    return true;
+  }
+
+  // Fallback seguro (ainda exige HMAC válido com secret): se query data.id veio ausente,
+  // testa com body.data.id caso o simulador/evento tenha assinado usando o id do corpo.
+  if (!queryDataId && bodyDataId && bodyDataId !== primaryId) {
+    return checkManifest(buildManifest(bodyDataId));
+  }
+
+  return false;
 }

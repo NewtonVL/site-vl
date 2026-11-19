@@ -356,6 +356,37 @@ test('Webhook Mercado Pago valida HMAC x-signature e garante idempotência', asy
     assert.equal(res2.getStatus(), 200);
     assert.equal(res2.getJson().deduplicated, true);
     assert.equal(savedEvents.length, 1);
+
+    // Simulação sem ?data.id= na query string (manifest oficial omite id quando ausente na URL)
+    const noQueryManifest = `request-id:${requestId};ts:${ts};`;
+    const v1NoQuery = createHmac('sha256', secret).update(noQueryManifest).digest('hex');
+    process.env.MERCADOPAGO_WEBHOOK_SECRET = `  ${secret}\n`;
+    const reqNoQuery = createMockReq({
+      method: 'POST',
+      url: '/api/mercadopago/webhook',
+      headers: {
+        'x-signature': `ts=${ts},v1=${v1NoQuery}`,
+        'x-request-id': requestId,
+      },
+      body: { type: 'payment', action: 'payment.updated', data: { id: '99999' } },
+    });
+    const resNoQuery = createMockRes();
+    await webhookHandler(reqNoQuery, resNoQuery.res);
+    assert.equal(resNoQuery.getStatus(), 200);
+
+    // Assinatura com segredo errado deve continuar retornando 401
+    const reqBadSig = createMockReq({
+      method: 'POST',
+      url: `/api/mercadopago/webhook?type=payment&data.id=${dataId}`,
+      headers: {
+        'x-signature': `ts=${ts},v1=${'0'.repeat(64)}`,
+        'x-request-id': requestId,
+      },
+      body: { type: 'payment', action: 'payment.updated', data: { id: dataId } },
+    });
+    const resBadSig = createMockRes();
+    await webhookHandler(reqBadSig, resBadSig.res);
+    assert.equal(resBadSig.getStatus(), 401);
   } finally {
     __setPersistenceAdapterForTests(null);
     process.env.MERCADOPAGO_WEBHOOK_SECRET = prevSecret;
