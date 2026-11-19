@@ -327,6 +327,32 @@ test('Webhook Mercado Pago valida HMAC x-signature e garante idempotência', asy
       true,
     );
 
+    // Orders usam IDs maiúsculos: o HMAC deve preservar cada caractere do data.id.
+    const orderDataId = 'ORDTST01M7TJZYGG0CNBZFAZVWWB30KB';
+    const orderManifest = `id:${orderDataId};request-id:${requestId};ts:${ts};`;
+    const orderSignature = createHmac('sha256', secret).update(orderManifest).digest('hex');
+    assert.equal(
+      verifyMercadoPagoWebhookSignature({
+        xSignature: `ts=${ts},v1=${orderSignature}`,
+        xRequestId: requestId,
+        dataId: orderDataId,
+        queryDataId: orderDataId,
+        bodyDataId: orderDataId,
+        secret,
+      }),
+      true,
+    );
+    assert.equal(
+      verifyMercadoPagoWebhookSignature({
+        xSignature: `ts=${ts},v1=${orderSignature}`,
+        xRequestId: requestId,
+        dataId: orderDataId.toLowerCase(),
+        queryDataId: orderDataId.toLowerCase(),
+        secret,
+      }),
+      false,
+    );
+
     const req1 = createMockReq({
       method: 'POST',
       url: `/api/mercadopago/webhook?type=payment&data.id=${dataId}`,
