@@ -245,6 +245,11 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     };
 
     if (!mpToken) {
+      console.warn('[MP_CREATE_ORDER_DRY_RUN]', {
+        hasMpToken: false,
+        mpEnvironment,
+        hasExpectedTestAccountId: Boolean(process.env.MP_TEST_ACCOUNT_ID?.trim()),
+      });
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.setHeader('Cache-Control', 'no-store');
@@ -287,6 +292,12 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     };
 
     if (!mpResponse.ok || !mpData.id || !mpData.checkout_url) {
+      console.error('[MP_CREATE_ORDER_UPSTREAM_ERROR]', {
+        status: mpResponse.status,
+        hasId: Boolean(mpData.id),
+        hasCheckoutUrl: Boolean(mpData.checkout_url),
+        detail: (mpData.message || 'Unknown error').slice(0, 200),
+      });
       res.statusCode = 502;
       res.setHeader('Content-Type', 'application/json');
       res.end(

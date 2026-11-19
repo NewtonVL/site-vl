@@ -486,6 +486,24 @@ export const SitesContractingPage: React.FC<SitesContractingPageProps> = ({
         return;
       }
 
+      if (contentType.includes('application/json')) {
+        const errData = (await response.json()) as { error?: string; detail?: string };
+        const detailSuffix = errData.detail ? ` (${errData.detail})` : '';
+        setSubmitError(
+          `${errData.error || `Falha ao preparar Order (${response.status}).`}${detailSuffix}`,
+        );
+        setPreparingCheckout(false);
+        return;
+      }
+
+      if (!(import.meta.env.DEV && proposal.isDemoPreview && proposal.id === 'VL-DEMO-001')) {
+        setSubmitError(
+          `Não foi possível preparar a Order no servidor (HTTP ${response.status}).`,
+        );
+        setPreparingCheckout(false);
+        return;
+      }
+
       setMpOrderResult({
         mode: 'architecture_dry_run',
         provider: 'mercadopago_orders',
@@ -500,6 +518,11 @@ export const SitesContractingPage: React.FC<SitesContractingPageProps> = ({
           'Simulação local concluída: Order Checkout Pro estruturada sem cobrança real e sem credenciais expostas no navegador.',
       });
     } catch {
+      if (!(import.meta.env.DEV && proposal.isDemoPreview && proposal.id === 'VL-DEMO-001')) {
+        setSubmitError('Erro de conexão ao preparar a Order Checkout Pro.');
+        setPreparingCheckout(false);
+        return;
+      }
       setMpOrderResult({
         mode: 'architecture_dry_run',
         provider: 'mercadopago_orders',
