@@ -1,6 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { verifyMercadoPagoWebhookSignature } from '../_lib/crypto.js';
 import { getPersistenceAdapter } from '../_lib/persistence.js';
+import { parseOrderExternalReference } from '../_lib/orderReference.js';
 
 interface WebhookBody {
   id?: string | number;
@@ -41,20 +42,6 @@ async function readJsonBody<T>(req: IncomingMessage): Promise<T> {
   }
   const raw = Buffer.concat(chunks).toString('utf8');
   return JSON.parse(raw || '{}') as T;
-}
-
-function parseExternalReference(externalRef?: string): {
-  proposalId: string | null;
-  acceptanceId: string | null;
-} {
-  if (!externalRef || !externalRef.includes(':')) {
-    return { proposalId: null, acceptanceId: null };
-  }
-  const [proposalId, acceptanceId] = externalRef.split(':');
-  return {
-    proposalId: proposalId || null,
-    acceptanceId: acceptanceId || null,
-  };
 }
 
 function toCents(amount: string | number | undefined): number | null {
@@ -190,7 +177,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
 
       const order = (await orderRes.json()) as MercadoPagoOrderDetails;
       const primaryPayment = order.transactions?.payments?.[0];
-      const refs = parseExternalReference(order.external_reference);
+      const refs = parseOrderExternalReference(order.external_reference);
       const persistedOrder = await persistence.findOrderById(dataId);
       const persistedAcceptance = refs.acceptanceId
         ? await persistence.findAcceptanceById(refs.acceptanceId)
@@ -205,7 +192,10 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       const referenceMismatch =
         !refs.proposalId ||
         !refs.acceptanceId ||
-        (persistedOrder !== null && persistedOrder.external_reference !== order.external_reference) ||
+        (persistedOrder !== null &&
+          (persistedOrder.external_reference !== order.external_reference ||
+            persistedOrder.proposal_id !== refs.proposalId ||
+            persistedOrder.acceptance_id !== refs.acceptanceId)) ||
         (persistedAcceptance !== null && persistedAcceptance.proposal_id !== refs.proposalId);
 
       const amountMismatch =
@@ -330,7 +320,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       }
 
       const state = evaluatePaymentSettlementState(payment);
-      const refs = parseExternalReference(payment.external_reference);
+      const refs = parseOrderExternalReference(payment.external_reference);
       const idempotencyKey = `mp:payment:${dataId}:${payment.status || 'unknown'}:${payment.status_detail || 'none'}`;
 
       const { deduplicated } = await persistence.insertPaymentEventIdempotent({

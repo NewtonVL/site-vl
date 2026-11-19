@@ -6,6 +6,7 @@ import {
 } from '../_lib/proposalsStore.js';
 import { verifyAcceptanceSignature } from '../_lib/crypto.js';
 import { getPersistenceAdapter } from '../_lib/persistence.js';
+import { buildOrderExternalReference } from '../_lib/orderReference.js';
 
 interface CreateOrderBody {
   proposalId?: string;
@@ -116,7 +117,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
         : computeServerCardTotalCents(proposal, receipt.selectedInstallments);
 
     const totalAmountStr = (serverAmountCents / 100).toFixed(2);
-    const externalReference = `${proposal.id}:${receipt.acceptanceId}`;
+    const externalReference = buildOrderExternalReference(proposal.id, receipt.acceptanceId);
     const idempotencyKey = `ord_${proposal.id}_${receipt.acceptanceId}_${receipt.paymentMethod}_${receipt.selectedInstallments}`;
     const baseUrl = process.env.APP_PUBLIC_URL || 'http://localhost:5173';
     const mpToken = process.env.MERCADOPAGO_ACCESS_TOKEN?.trim();

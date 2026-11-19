@@ -27,6 +27,11 @@ import cnpjLookupHandler, {
   isValidCnpjDigits,
 } from '../api/proposals/cnpj-lookup.js';
 import webhookHandler, { evaluatePaymentSettlementState } from '../api/mercadopago/webhook.js';
+import {
+  buildOrderExternalReference,
+  MP_EXTERNAL_REFERENCE_REGEX,
+  parseOrderExternalReference,
+} from '../api/_lib/orderReference.js';
 
 function createMockReq(options: {
   method: string;
@@ -1044,6 +1049,8 @@ test('Checkout Pro via Orders API: valida MP_TEST_ACCOUNT_ID antes de POST /v1/o
     assert.equal(capturedOrderBody.type, 'online');
     assert.equal(capturedOrderBody.processing_mode, 'manual');
     assert.equal(capturedOrderBody.total_amount, '1992.00');
+    assert.match(String(capturedOrderBody.external_reference), MP_EXTERNAL_REFERENCE_REGEX);
+    assert.equal(capturedOrderBody.external_reference, 'VL-DEMO-001__acc_mp_1');
     assert.equal(capturedOrderBody.back_urls, undefined);
     assert.equal(capturedOrderBody.auto_return, undefined);
     const onlineConfig = (capturedOrderBody.config as { online?: Record<string, string> } | undefined)?.online;
@@ -1054,6 +1061,9 @@ test('Checkout Pro via Orders API: valida MP_TEST_ACCOUNT_ID antes de POST /v1/o
     assert.ok(capturedOrderHeaders['X-Idempotency-Key']);
     assert.equal(savedOrders.length, 1);
     assert.equal(savedOrders[0].order_id, 'ORD01TEST123');
+    assert.equal(savedOrders[0].proposal_id, 'VL-DEMO-001');
+    assert.equal(savedOrders[0].acceptance_id, 'acc_mp_1');
+    assert.equal(savedOrders[0].external_reference, capturedOrderBody.external_reference);
 
     // 6. Erro 400 do Mercado Pago com array errors[] -> extrai code/message sem expor token
     globalThis.fetch = (async (input) => {
@@ -1103,7 +1113,7 @@ test('Webhook de evento Order: consulta GET /v1/orders/{id}, concilia valor/refe
       order_id: 'ORD_OK_1',
       proposal_id: 'VL-2026-100',
       acceptance_id: 'acc_100',
-      external_reference: 'VL-2026-100:acc_100',
+      external_reference: 'VL-2026-100__acc_100',
       expected_amount_cents: 199200,
       payment_method: 'pix',
       selected_installments: 1,
@@ -1116,7 +1126,7 @@ test('Webhook de evento Order: consulta GET /v1/orders/{id}, concilia valor/refe
       order_id: 'ORD_MISMATCH_2',
       proposal_id: 'VL-2026-100',
       acceptance_id: 'acc_100',
-      external_reference: 'VL-2026-100:acc_100',
+      external_reference: 'VL-2026-100__acc_100',
       expected_amount_cents: 199200,
       payment_method: 'pix',
       selected_installments: 1,
@@ -1175,7 +1185,7 @@ test('Webhook de evento Order: consulta GET /v1/orders/{id}, concilia valor/refe
           id: 'ORD_OK_1',
           status: 'processed',
           total_amount: '1992.00',
-          external_reference: 'VL-2026-100:acc_100',
+          external_reference: 'VL-2026-100__acc_100',
           transactions: {
             payments: [
               { id: 'PAY_1', status: 'processed', payment_method_id: 'pix', installments: 1 },
@@ -1223,7 +1233,7 @@ test('Webhook de evento Order: consulta GET /v1/orders/{id}, concilia valor/refe
           id: 'ORD_OK_1',
           status: 'failed',
           total_amount: '1992.00',
-          external_reference: 'VL-2026-100:acc_100',
+          external_reference: 'VL-2026-100__acc_100',
           transactions: {
             payments: [{ id: 'PAY_FAIL', status: 'failed', payment_method_id: 'credit_card', installments: 10 }],
           },
@@ -1254,7 +1264,7 @@ test('Webhook de evento Order: consulta GET /v1/orders/{id}, concilia valor/refe
           id: 'ORD_MISMATCH_2',
           status: 'processed',
           total_amount: '10.00',
-          external_reference: 'VL-2026-100:acc_100',
+          external_reference: 'VL-2026-100__acc_100',
           transactions: { payments: [{ id: 'PAY_2', status: 'processed' }] },
         }),
         { status: 200, headers: { 'Content-Type': 'application/json' } },
@@ -1282,4 +1292,25 @@ test('Webhook de evento Order: consulta GET /v1/orders/{id}, concilia valor/refe
     if (prevToken !== undefined) process.env.MERCADOPAGO_ACCESS_TOKEN = prevToken;
     else delete process.env.MERCADOPAGO_ACCESS_TOKEN;
   }
+});
+
+test('external_reference Orders API: respeita ^[a-zA-Z0-9_-]{1,64}$ e preserva conciliação com proposalId/acceptanceId', () => {
+  const accUuid = 'acc_e7da6651-ce46-4266-baf7-61f0d77782c2';
+  const refDemo = buildOrderExternalReference('VL-DEMO-001', accUuid);
+  assert.match(refDemo, MP_EXTERNAL_REFERENCE_REGEX);
+  assert.equal(refDemo, `VL-DEMO-001__${accUuid}`);
+  assert.deepEqual(parseOrderExternalReference(refDemo), {
+    proposalId: 'VL-DEMO-001',
+    acceptanceId: accUuid,
+  });
+
+  // Proposta longa (25 chars) -> compacta hífens do UUID para caber em <= 64 chars e restaura na leitura
+  const longProposal = 'VL-2026-EMPRESA-GRANDE-01';
+  const refCompact = buildOrderExternalReference(longProposal, accUuid);
+  assert.match(refCompact, MP_EXTERNAL_REFERENCE_REGEX);
+  assert.ok(refCompact.length <= 64);
+  assert.deepEqual(parseOrderExternalReference(refCompact), {
+    proposalId: longProposal,
+    acceptanceId: accUuid,
+  });
 });
