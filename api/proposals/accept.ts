@@ -91,7 +91,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     const body = await readJsonBody<AcceptRequestBody>(req);
     const lookup = findServerProposalAuthorized(body.proposalId || '', body.accessToken);
 
-    if (!lookup.ok) {
+    if (!('proposal' in lookup)) {
       res.statusCode = lookup.status;
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({ error: lookup.error }));

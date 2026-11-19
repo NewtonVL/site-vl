@@ -25,7 +25,7 @@ export default function handler(req: IncomingMessage, res: ServerResponse) {
   const accessToken = url.searchParams.get('token') || undefined;
   const lookup = findServerProposalAuthorized(proposalId, accessToken);
 
-  if (!lookup.ok) {
+  if (!('proposal' in lookup)) {
     res.statusCode = lookup.status;
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
