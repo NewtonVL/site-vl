@@ -95,11 +95,22 @@ async function checkProposalRateLimit(
 ): Promise<{ allowed: boolean; retryAfterSeconds: number; unavailable?: boolean }> {
   const persistence = getPersistenceAdapter();
   if (persistence) {
-    return persistence.consumeCnpjLookupQuota(
-      proposalId.toUpperCase(),
-      RATE_LIMIT_MAX_PER_PROPOSAL,
-      RATE_LIMIT_WINDOW_SECONDS,
-    );
+    try {
+      return await persistence.consumeCnpjLookupQuota(
+        proposalId.toUpperCase(),
+        RATE_LIMIT_MAX_PER_PROPOSAL,
+        RATE_LIMIT_WINDOW_SECONDS,
+      );
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'unknown_error';
+      console.warn('[CNPJ_LOOKUP_RATE_LIMIT_ERROR]', {
+        isDemoPreview: Boolean(isDemoPreview),
+        message: message.slice(0, 200),
+      });
+      if (!isDemoPreview) {
+        return { allowed: false, retryAfterSeconds: 0, unavailable: true };
+      }
+    }
   }
 
   // Para propostas reais sem banco durável, falhar fechado para não depender de memória local
@@ -198,14 +209,35 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     }
 
     const fetchFn = customFetchForTests || fetch;
-    const upstreamRes = await fetchFn(`https://apipj.com.br/v1/cnpj/${normalizedCnpj}`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        Accept: 'application/json',
-      },
-      signal: AbortSignal.timeout(8000),
-    });
+    let upstreamRes: globalThis.Response;
+    try {
+      upstreamRes = await fetchFn(`https://apipj.com.br/v1/cnpj/${normalizedCnpj}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          Accept: 'application/json',
+          'User-Agent': 'VitrineLocal-Server/1.0',
+        },
+        signal: AbortSignal.timeout(10000),
+      });
+    } catch (err) {
+      const name = err instanceof Error ? err.name : 'Error';
+      const message = err instanceof Error ? err.message : 'unknown_fetch_error';
+      console.error('[CNPJ_LOOKUP_UPSTREAM_FETCH_ERROR]', {
+        name,
+        message: message.slice(0, 200),
+      });
+      res.statusCode = 502;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(
+        JSON.stringify({
+          fallbackManual: true,
+          code: 'UPSTREAM_UNAVAILABLE',
+          error: 'Não foi possível consultar o CNPJ agora. Preencha os dados da empresa manualmente.',
+        }),
+      );
+      return;
+    }
 
     if (upstreamRes.status === 404) {
       res.statusCode = 404;
@@ -237,6 +269,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
     }
 
     if (!upstreamRes.ok) {
+      console.error('[CNPJ_LOOKUP_UPSTREAM_STATUS]', { status: upstreamRes.status });
       res.statusCode = 502;
       res.setHeader('Content-Type', 'application/json');
       res.end(
@@ -249,7 +282,23 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       return;
     }
 
-    const raw = (await upstreamRes.json()) as ApiPjRawResponse;
+    let raw: ApiPjRawResponse;
+    try {
+      raw = (await upstreamRes.json()) as ApiPjRawResponse;
+    } catch (err) {
+      const name = err instanceof Error ? err.name : 'Error';
+      console.error('[CNPJ_LOOKUP_UPSTREAM_PARSE_ERROR]', { name });
+      res.statusCode = 502;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(
+        JSON.stringify({
+          fallbackManual: true,
+          code: 'UPSTREAM_UNAVAILABLE',
+          error: 'Não foi possível consultar o CNPJ agora. Preencha os dados da empresa manualmente.',
+        }),
+      );
+      return;
+    }
     const situacaoDesc = raw.situacao_cadastral?.descricao?.trim() || null;
     const situacaoData = raw.situacao_cadastral?.data?.trim() || null;
     const situacaoCadastral = situacaoDesc
@@ -272,7 +321,9 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
         source: 'apipj.com.br (base mensal)',
       }),
     );
-  } catch {
+  } catch (err) {
+    const name = err instanceof Error ? err.name : 'Error';
+    console.error('[CNPJ_LOOKUP_HANDLER_ERROR]', { name });
     res.statusCode = 502;
     res.setHeader('Content-Type', 'application/json');
     res.end(

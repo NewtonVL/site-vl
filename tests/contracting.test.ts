@@ -608,6 +608,82 @@ test('Rate limit persistente de CNPJ bloqueia chamadas repetidas e simultâneas 
   }
 });
 
+test('CNPJ lookup: fallback de rate limit na demo VL-DEMO-001 e erro de rede no upstream', async () => {
+  const prevKey = process.env.APIPJ_API_KEY;
+  process.env.APIPJ_API_KEY = 'fake-apipj-key';
+  __resetCnpjRateLimitForTests();
+
+  __setPersistenceAdapterForTests({
+    async upsertContractVersion() {},
+    async upsertProposal() {},
+    async insertAcceptance() {},
+    async findAcceptanceById() {
+      return null;
+    },
+    async insertOrder() {},
+    async findOrderById() {
+      return null;
+    },
+    async insertPaymentEventIdempotent() {
+      return { deduplicated: false };
+    },
+    async consumeCnpjLookupQuota() {
+      throw new Error('Falha ao verificar cota de consulta CNPJ: 500');
+    },
+    async confirmDeliveryAtomic() {
+      throw new Error('not used');
+    },
+  });
+
+  try {
+    // 1. Falha no RPC de cota em VL-DEMO-001 -> fallback para memória e 200 OK
+    __setCnpjLookupFetchForTests(async () =>
+      new Response(
+        JSON.stringify({
+          razao_social: 'BANCO DO BRASIL SA',
+          nome_fantasia: 'DIRECAO GERAL',
+          situacao_cadastral: { descricao: 'ATIVA', data: '2005-11-03' },
+          endereco: { municipio: 'BRASILIA', uf: 'DF' },
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      ),
+    );
+    const reqDemo = createMockReq({
+      method: 'POST',
+      url: '/api/proposals/cnpj-lookup',
+      body: { proposalId: 'VL-DEMO-001', cnpj: '00.000.000/0001-91' },
+    });
+    const resDemo = createMockRes();
+    await cnpjLookupHandler(reqDemo, resDemo.res);
+    assert.equal(resDemo.getStatus(), 200);
+    assert.equal(resDemo.getJson<{ razaoSocial: string }>().razaoSocial, 'BANCO DO BRASIL SA');
+
+    // 2. Falha de rede/timeout no upstream -> 502 UPSTREAM_UNAVAILABLE com fallbackManual
+    __setCnpjLookupFetchForTests(async () => {
+      throw new Error('network timeout');
+    });
+    const reqTimeout = createMockReq({
+      method: 'POST',
+      url: '/api/proposals/cnpj-lookup',
+      body: { proposalId: 'VL-DEMO-001', cnpj: '00.000.000/0001-91' },
+    });
+    const resTimeout = createMockRes();
+    await cnpjLookupHandler(reqTimeout, resTimeout.res);
+    assert.equal(resTimeout.getStatus(), 502);
+    assert.equal(resTimeout.getJson<{ code: string; fallbackManual: boolean }>().code, 'UPSTREAM_UNAVAILABLE');
+    assert.equal(resTimeout.getJson<{ fallbackManual: boolean }>().fallbackManual, true);
+  } finally {
+    __setPersistenceAdapterForTests(null);
+    __setCnpjLookupFetchForTests(null);
+    __resetCnpjRateLimitForTests();
+    if (prevKey !== undefined) {
+      process.env.APIPJ_API_KEY = prevKey;
+    } else {
+      delete process.env.APIPJ_API_KEY;
+    }
+  }
+});
+
 test('Confirmação de entrega: exige segredo interno, bloqueia data do cliente e inicializa marco de 12 meses', async () => {
   const prevSecret = process.env.DELIVERY_ADMIN_SECRET;
   process.env.DELIVERY_ADMIN_SECRET = 'internal-delivery-secret';

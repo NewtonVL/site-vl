@@ -291,7 +291,8 @@ const supabaseAdapter: PersistenceAdapter = {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Falha ao verificar cota de consulta CNPJ: ${res.status}`);
+      const text = await res.text().catch(() => '');
+      throw new Error(`Falha ao verificar cota de consulta CNPJ: ${res.status} ${text.slice(0, 200)}`);
     }
     const rows = (await res.json()) as Array<{
       allowed: boolean;
